@@ -262,7 +262,9 @@ a { color: inherit; }
   font-size: clamp(2.4rem, 6vw, 4.5rem);
   line-height: 1.05;
   letter-spacing: -0.01em;
-  max-width: 18ch;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding: 0 1.25rem;
 }
 .diagnosis .lede {
   font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
@@ -310,8 +312,9 @@ a { color: inherit; }
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  border-top: 2px solid var(--paper-ink);
-  padding-top: 1rem;
+  border-bottom: 2px solid var(--paper-ink);
+  padding-bottom: 1rem;
+  margin-top: 4rem;
   margin-bottom: 3.5rem;
 }
 .manifesto ol {
@@ -340,10 +343,13 @@ a { color: inherit; }
 }
 .signoff {
   font-family: var(--display);
-  font-size: clamp(2.75rem, 8vw, 6rem);
+  font-size: clamp(2.2rem, 7.4vw, 8.5rem);
   line-height: 1;
   letter-spacing: -0.02em;
   margin-top: 5rem;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding: 0 1.25rem;
   text-wrap: balance;
 }
 
@@ -430,7 +436,7 @@ footer a { color: var(--ink); }
   <div class="hero-core">
     <div class="readout">
       <p>&gt; 08:04 — you log in.</p>
-      <p>&gt; <span class="count"><span id="alert-count">47,832</span> open alerts</span> · +614 overnight</p>
+      <p>&gt; <span class="count"><span id="alert-count">47,832</span> open alerts</span> +614 overnight</p>
     </div>
     <h1>SOC sucks.</h1>
     <p class="sub">We know it does. So do you.</p>
@@ -559,7 +565,7 @@ footer a { color: var(--ink); }
     <li>Burnout is not a staffing problem. It's a signal-quality problem.</li>
     <li>You were hired to hunt threats. Not to close tabs.</li>
   </ol>
-  <p class="signoff">SOC doesn't have to suck.</p>
+  <p class="signoff">This needs to change.</p>
 </section>
 </div>
 
@@ -576,5 +582,31 @@ footer a { color: var(--ink); }
 <footer>
   <p>soc.sucks — built with love and resentment by <a href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">CraftedSignal</a>.</p>
 </footer>
+<script>
+(() => {
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const counter = document.getElementById('alert-count');
+  let count = 47832;
+  const fmt = n => n.toLocaleString('en-US');
+  const bump = (n = 1) => { count += n; if (counter) counter.textContent = fmt(count); };
+  if (counter && !reduced) {
+    const tick = () => { bump(Math.random() < 0.2 ? 3 : 1); setTimeout(tick, 500 + Math.random() * 2500); };
+    setTimeout(tick, 1200);
+  }
+  const wire = btn => btn.addEventListener('click', () => {
+    const card = btn.closest('.alert-card');
+    const clone = card.cloneNode(true);
+    clone.querySelectorAll('.dup-note').forEach(n => n.remove());
+    const note = document.createElement('p');
+    note.className = 'dup-note';
+    note.textContent = '1 new alert';
+    clone.prepend(note);
+    wire(clone.querySelector('.dismiss'));
+    card.after(clone);
+    bump(2);
+  });
+  document.querySelectorAll('.queue .dismiss').forEach(btn => { btn.hidden = false; wire(btn); });
+})();
+</script>
 </body>
 </html>
