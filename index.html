@@ -405,10 +405,29 @@ a { color: inherit; }
   margin-top: 1.5rem;
   margin-bottom: 3.5rem;
 }
+.rfc {
+  font-size: 0.75rem;
+  color: rgba(20, 18, 14, 0.55);
+  margin: -2.2rem 0 3rem;
+}
 .manifesto ol {
   list-style: none;
   counter-reset: article;
 }
+.snark {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--paper-red);
+  margin-top: 0.4rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.manifesto ol:not(.js) li:hover .snark { opacity: 1; }
+.manifesto li.reveal .snark { opacity: 1; }
+@media (hover: none) { .snark { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .snark { transition: none; } }
 .manifesto li {
   counter-increment: article;
   font-family: "Source Serif 4", Georgia, serif;
@@ -468,13 +487,22 @@ a { color: inherit; }
   font-weight: 400;
   font-size: clamp(1.5rem, 3.4vw, 2.25rem);
   line-height: 1.1;
-  margin: 0.9rem 0 1rem;
+  margin: 1.7rem 0 1.4rem;
 }
 .true-positive .body { font-size: 0.9375rem; max-width: 62ch; color: var(--ink); }
-.stages {
+.stages-title {
   margin-top: 1.3rem;
   border-top: 1px solid var(--line);
   padding-top: 1.1rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.stages {
+  list-style: none;
+  margin-top: 0.5rem;
   font-size: 0.75rem;
   line-height: 2.1;
   color: var(--ink-dim);
@@ -710,23 +738,24 @@ footer a { color: var(--ink); }
   <div class="page-scroll">
     <div class="manifesto">
       <h2>The soc.sucks manifesto</h2>
+      <p class="rfc">The key words "MUST", "MUST NOT" and "SHOULD" are to be interpreted as described in RFC 2119. (as old as your SIEM)</p>
       <ol>
-        <li>An alert nobody reads is a lie.</li>
-        <li>A detection that can't be tested is a guess. A guess in production is a liability.</li>
-        <li>Coverage is not a green heatmap. Coverage is the risk you actually face: detected, tested, proven.</li>
-        <li>Noise is not diligence. Volume is not vigilance. An inbox is not a defense.</li>
-        <li>Triaging noise faster is not the same as making less noise. The problem was never how fast you close alerts. It's what's creating them.</li>
-        <li>Severity should come from what the business stands to lose. Not from a vendor default.</li>
-        <li>When everything is critical, nothing is.</li>
-        <li>Your detections are code. Version them. Test them. Review them. Roll them back.</li>
-        <li>Detections belong to you. Not to your SIEM vendor's query language.</li>
-        <li>A rule that breaks silently turns your SIEM into a diary.</li>
-        <li>Every rule deserves an owner, a test, and a reason to exist. Delete the rest.</li>
-        <li>Threat intel that takes a week to become a detection is history, not intelligence.</li>
-        <li>Burnout is not a staffing problem. It's a signal-quality problem.</li>
-        <li>Tier 1 is not a career stage. It's a symptom.</li>
-        <li>Juniors don't need permission to matter. They need guardrails.</li>
-        <li>You were hired to hunt threats. Not to be a click monkey.</li>
+        <li>Every alert MUST be worth a human's attention.<span class="snark">An alert nobody reads is a lie.</span></li>
+        <li>Every detection MUST be tested before it ships.<span class="snark">Untested detections are guesses. Guesses in production are liabilities.</span></li>
+        <li>Coverage MUST be measured against your actual risk.<span class="snark">A green heatmap on a slide protects the slide.</span></li>
+        <li>Noise MUST go down over time, not up.<span class="snark">Volume is not vigilance. An inbox is not a defense.</span></li>
+        <li>Fix what creates the alerts, not how fast you close them.<span class="snark">Auto-closing garbage faster is still garbage.</span></li>
+        <li>Severity MUST come from what the business stands to lose.<span class="snark">The vendor default doesn't know what pays your salary.</span></li>
+        <li>"Critical" MUST be rare.<span class="snark">When everything is critical, nothing is.</span></li>
+        <li>Detections MUST live in version control.<span class="snark">"The old version is in my Downloads folder" is not version control.</span></li>
+        <li>Detection logic MUST outlive your SIEM contract.<span class="snark">Rewriting 600 rules by hand is not a migration plan. It's a hostage situation.</span></li>
+        <li>A rule that goes silent MUST page someone.<span class="snark">Otherwise your SIEM is a diary with a license fee.</span></li>
+        <li>Every rule MUST have an owner, a test, and a reason to exist.<span class="snark">Delete the rest. Yes, that one too.</span></li>
+        <li>Threat intel MUST become detections in days, not quarters.<span class="snark">A technique that sits in a PDF for a month is history, not intelligence.</span></li>
+        <li>Burnout MUST be treated as a signal-quality problem.<span class="snark">You can't hire your way out of 47,000 false positives.</span></li>
+        <li>Tier 1 MUST NOT be a life sentence.<span class="snark">Closing duplicates for two years is not a career path. It's a symptom.</span></li>
+        <li>Juniors MUST be able to ship safely.<span class="snark">They don't need permission to matter. They need guardrails.</span></li>
+        <li>Analysts MUST hunt.<span class="snark">You were hired to hunt threats, not click around like a monkey.</span></li>
       </ol>
       <p class="signoff">This needs to change.</p>
     </div>
@@ -740,8 +769,15 @@ footer a { color: var(--ink); }
       <p class="meta"><span class="sev">true positive</span>confidence: high · source: verified</p>
       <h2>BUT. We're building the fix.</h2>
       <p class="body">We're not another AI that closes your alerts faster. We fix the detections generating them: weighted by the risk that's actually yours, written once in Sigma and compiled to whatever SIEM you run this year, tested before they ship, monitored so they never break silently, rolled back in one click. We're CraftedSignal, and we build the detection engineering control plane. Cool stuff.</p>
-      <p class="stages">01 <b>risk</b> what are we defending? · 02 <b>threat</b> what could happen? · 03 <b>hunt</b> is it already happening? · 04 <b>monitor</b> are we still protected? · 05 <b>verify</b> are we sure?</p>
-      <a class="cta" href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">Investigate → craftedsignal.io</a>
+      <p class="stages-title">The five questions a SOC exists to answer</p>
+      <ul class="stages">
+        <li>01 <b>risk</b> · what are we defending?</li>
+        <li>02 <b>threat</b> · what could happen?</li>
+        <li>03 <b>hunt</b> · is it already happening?</li>
+        <li>04 <b>monitor</b> · are we still protected?</li>
+        <li>05 <b>verify</b> · are we sure?</li>
+      </ul>
+      <a class="cta" href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">Resolve →</a>
     </article>
     <p class="ps">p.s. while you read this, your queue grew by <span id="ps-count">41</span>.</p>
   </div>
@@ -812,6 +848,21 @@ footer a { color: var(--ink); }
     points();
   });
   document.querySelectorAll('.queue .dismiss').forEach(btn => { btn.hidden = false; wire(btn); });
+
+  const list = document.querySelector('.manifesto ol');
+  if (list && matchMedia('(hover: hover)').matches) {
+    list.classList.add('js');
+    let cur = null;
+    const set = li => {
+      if (cur === li) return;
+      if (cur) cur.classList.remove('reveal');
+      cur = li;
+      if (cur) cur.classList.add('reveal');
+    };
+    list.addEventListener('mousemove', e => set(e.target.closest('li')));
+    list.addEventListener('mouseleave', () => set(null));
+    list.closest('.page-scroll')?.addEventListener('scroll', () => set(null), { passive: true });
+  }
 
   const dots = [...document.querySelectorAll('.dots a')];
   const pages = [...document.querySelectorAll('.page')];
