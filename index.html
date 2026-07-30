@@ -6,21 +6,61 @@
 <title>SOC sucks. We know it does.</title>
 <meta name="description" content="47,832 open alerts. Zero of them matter. A manifesto for everyone stuck triaging a queue that software engineering learned how to fix thirty years ago.">
 <link rel="canonical" href="https://soc.sucks/">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="author" content="CraftedSignal">
+<meta name="theme-color" content="#0a0c10">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="soc.sucks">
+<meta property="og:locale" content="en_US">
 <meta property="og:url" content="https://soc.sucks/">
 <meta property="og:title" content="SOC sucks. We know it does.">
 <meta property="og:description" content="47,832 open alerts. Zero of them matter. A manifesto for everyone stuck in the queue.">
 <meta property="og:image" content="https://soc.sucks/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="SOC sucks. We know it does. 47,832 open alerts.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="SOC sucks. We know it does.">
 <meta name="twitter:description" content="47,832 open alerts. Zero of them matter. A manifesto for everyone stuck in the queue.">
 <meta name="twitter:image" content="https://soc.sucks/og-image.png">
+<meta name="twitter:image:alt" content="SOC sucks. We know it does. 47,832 open alerts.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23ff5a5f'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='bold' text-anchor='middle' fill='%230a0c10'%3E!%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://soc.sucks/#website",
+      "url": "https://soc.sucks/",
+      "name": "soc.sucks",
+      "description": "A manifesto for detection engineering, from the people stuck in the alert queue.",
+      "inLanguage": "en",
+      "publisher": { "@id": "https://craftedsignal.io/#org" }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://craftedsignal.io/#org",
+      "name": "CraftedSignal",
+      "url": "https://craftedsignal.io/",
+      "description": "The detection engineering control plane."
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://soc.sucks/#webpage",
+      "url": "https://soc.sucks/",
+      "name": "SOC sucks. We know it does.",
+      "isPartOf": { "@id": "https://soc.sucks/#website" },
+      "about": { "@id": "https://craftedsignal.io/#org" },
+      "primaryImageOfPage": "https://soc.sucks/og-image.png",
+      "inLanguage": "en"
+    }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;700&family=Source+Serif+4:opsz,wght@8..60,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:opsz,wght@8..60,400&amp;display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #0a0c10;
@@ -319,6 +359,16 @@ a { color: inherit; }
   }
   .bootlog .bad { color: var(--sev-critical); }
   .bootlog .desk { display: none; }
+  .boot-skip {
+    position: absolute;
+    right: 1.25rem;
+    bottom: 1.1rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  body.desktop .boot-skip { display: none; }
   /* minimise every window and the BIOS is still sitting there underneath */
   body.desktop .bootlog {
     animation: none;
@@ -465,7 +515,6 @@ a { color: inherit; }
 }
 .alert-card .body {
   font-size: 0.9375rem;
-  max-width: 78ch;
   margin-top: 0.35rem;
 }
 .alert-card .footnote {
@@ -474,6 +523,16 @@ a { color: inherit; }
   color: var(--ink-dim);
 }
 .alert-card[data-severity="new"] .sev { animation: blink 1.6s steps(2, start) infinite; }
+.scroll-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5.5rem;
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--bg) 15%, transparent);
+}
 .queue-title {
   font-family: var(--mono);
   font-size: clamp(1rem, 2.4vw, 1.5rem);
@@ -545,6 +604,7 @@ a { color: inherit; }
 .diagnosis .lede {
   font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
   line-height: 1.75;
+  max-width: 95ch;
   margin: 2rem 0 4rem;
   color: rgba(20, 18, 14, 0.82);
 }
@@ -605,14 +665,12 @@ a { color: inherit; }
   font-family: var(--mono);
   font-size: 0.8125rem;
   line-height: 1.6;
-  color: var(--paper-red);
+  color: rgba(20, 18, 14, 0.5);
   margin-top: 0.4rem;
-  opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: color 0.15s ease;
 }
-.manifesto ol:not(.js) li:hover .snark { opacity: 1; }
-.manifesto li.lit .snark { opacity: 1; }
-@media (hover: none) { .snark { opacity: 1; } }
+.manifesto ol:not(.js) li:hover .snark { color: var(--paper-red); }
+.manifesto li.lit .snark { color: var(--paper-red); }
 @media (prefers-reduced-motion: reduce) { .snark { transition: none; } }
 .manifesto li {
   counter-increment: article;
@@ -649,7 +707,6 @@ a { color: inherit; }
 /* ---------- page 4: reveal ---------- */
 .p-reveal { display: flex; flex-direction: column; }
 .reveal .outro { margin-top: 1.7rem; }
-.reveal .alert-card .body { max-width: none; }
 .reveal {
   flex: 1;
   display: flex;
@@ -677,7 +734,8 @@ a { color: inherit; }
   line-height: 1.1;
   margin: 1.7rem 0 1.4rem;
 }
-.true-positive .body { font-size: 0.9375rem; max-width: 62ch; color: var(--ink); }
+.true-positive .sev { margin-right: 1.1rem; }
+.true-positive .body { font-size: 0.9375rem; color: var(--ink); }
 .stages-title {
   margin-top: 1.3rem;
   border-top: 1px solid var(--line);
@@ -708,7 +766,7 @@ a { color: inherit; }
 }
 .cta {
   display: inline-block;
-  margin-top: 1.6rem;
+  margin-top: 2.6rem;
   background: var(--true-positive);
   color: var(--bg);
   font-weight: 700;
@@ -749,10 +807,12 @@ footer a { color: var(--ink); }
 }
 /* window state: JS-driven, must outrank the boot-sequence intro rules above */
 .booted .w-readout, .booted .w-assessment, .booted .hero h1,
-.booted .sub, .booted .popup-actions, .booted .readout p {
+.booted .sub, .booted .popup-actions, .booted .readout p,
+.booted .chrome, .booted .bootlog p {
   animation: none;
   opacity: 1;
 }
+.booted .bootlog { animation: none; opacity: 0; visibility: hidden; }
 .popup.closing { animation: winclose 0.18s ease-in forwards; }
 .popup.gone { visibility: hidden; opacity: 0; }
 .popup.reopen { animation: seqin 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.15) forwards; }
@@ -807,6 +867,7 @@ footer a { color: var(--ink); }
         <p>mounting alert queue ......... <span class="bad">47,832 items · ready</span></p>
         <p>SOC analyst profile loaded .. 12 errors · continuing anyway</p>
         <p class="desk">&gt; minimising a window has never closed a ticket.</p>
+        <div class="boot-skip">press any key to skip</div>
       </div>
     <div class="chrome" role="presentation">
       <span class="chrome-title">Unified Security Operations Console v4.7.2 · end of life</span>
@@ -852,6 +913,7 @@ footer a { color: var(--ink); }
 </section>
 
 <section class="page scan" id="p2" aria-label="Page 2: the queue">
+  <div class="scroll-fade" aria-hidden="true"></div>
   <div class="page-scroll">
     <div class="queue" role="group" aria-label="Alert queue">
       <h2 class="queue-title">SOC Headaches Queue</h2>
@@ -860,116 +922,116 @@ footer a { color: var(--ink); }
       <article class="alert-card" data-severity="critical">
         <p class="meta"><span class="sev">critical</span><code>Suspicious_PowerShell_v2_FINAL_old</code> · firing 14× today · assignee: none</p>
         <p class="body">Same rule. Same false positive. Nobody remembers who wrote it. Nobody dares delete it.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="critical">
         <p class="meta"><span class="sev">critical</span>03:12 AM · escalated · on-call: you</p>
         <p class="body">Paged. Escalated. False positive by 03:19. Sleep not recovered. Trust not recovered either.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="high">
         <p class="meta"><span class="sev">high</span>silent for 212 days · last fired: March</p>
         <p class="body">Stopped matching when the log source changed in March. Nothing broke. Nothing fired. Nobody noticed.</p>
         <p class="footnote">industry estimate: ~5% of deployed detections actually work</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="critical">
         <p class="meta"><span class="sev">critical</span>severity source: vendor default</p>
         <p class="body">The dead test VM: CRITICAL. The platform that makes the money: not covered. The SIEM doesn't know which one pays your salary.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="high">
         <p class="meta"><span class="sev">high</span>description: (empty) · expected behavior: undocumented</p>
         <p class="body">Nobody wrote down what it catches or what normal looks like. Just a name and a severity. The severity is wrong.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="info">
         <p class="meta"><span class="sev">info</span>recurring: monthly, before the board meeting</p>
-        <p class="body">The slide says 87% MITRE coverage. The heatmap is green. Nobody has ever tested it.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <p class="body">The slide says 87% MITRE coverage. The heatmap is green. Real threats don't care.</p>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="high">
         <p class="meta"><span class="sev">high</span>deployed via: pasting into the prod console</p>
-        <p class="body">Test coverage: "worked in the lab". Version history: none. Rollback plan: prayer.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <p class="body">Test coverage: "worked in the lab". Version history: none. Rollback plan: coffee.</p>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="medium">
         <p class="meta"><span class="sev">medium</span>author: left the company two years ago</p>
         <p class="body">The rule stays. Changing it is archaeology. Deleting it is liability.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="medium">
         <p class="meta"><span class="sev">medium</span>runbook: <code>SOC_Procedures_FINAL_(copy)(2).one</code></p>
         <p class="body">The runbook is in a OneNote. Somewhere. Last updated three years ago by someone who left. Step 4 references a console that no longer exists.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="low">
         <p class="meta"><span class="sev">low</span>escalated via: Teams thread · 47 replies</p>
         <p class="body">The incident is in Teams. The context is in a Jira ticket. The fix is in someone's head. None of them link.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="medium">
         <p class="meta"><span class="sev">medium</span>tier 1 · time-to-touching-a-rule: 2 years</p>
         <p class="body">Juniors aren't allowed near detections. There's no safe way to let them. So they close duplicates until they quit.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="medium">
         <p class="meta"><span class="sev">medium</span>ticket #4821 · opened 14 months ago</p>
         <p class="body">Tuning request. Status: backlog. Priority: someday.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="medium">
         <p class="meta"><span class="sev">medium</span>threat hunt · status: skipped, again</p>
         <p class="body">Hunting is a manual query and a wall of raw rows. Everyone agrees it matters. Nobody has the time. Maybe next sprint.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="info">
         <p class="meta"><span class="sev">info</span>threat feed · unread: 212 advisories</p>
         <p class="body">New techniques drop weekly. Nobody triages the feed. The one that matters to your stack is in there somewhere.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="low">
         <p class="meta"><span class="sev">low</span>threshold raised again · fourth time this quarter</p>
         <p class="body">The dashboard is finally green. So is the attacker's path.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="info">
         <p class="meta"><span class="sev">info</span>audit season</p>
         <p class="body">The auditor asked if the detections work. We showed them a spreadsheet. Everyone nodded.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="info">
         <p class="meta"><span class="sev">info</span>platform: rebranded again</p>
         <p class="body">SIEM → next-gen SIEM → XDR → XDR with SOAR inside. The acronyms rotate. The queue is forever.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="high">
         <p class="meta"><span class="sev">high</span>renewal quote: +40% · negotiating leverage: none</p>
         <p class="body">Every rule is written in the vendor's query language. Leaving means rewriting 600 rules by hand. The vendor knows. The quote shows it.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="new">
         <p class="meta"><span class="sev">new</span>via: vendor webinar</p>
         <p class="body"><strong>AI-powered auto-triage now enabled.</strong> The false positives are still generated. Now they're just closed faster, by something that also doesn't know why they exist.</p>
-        <button class="dismiss" hidden>Dismiss</button>
+        <button class="dismiss" type="button" hidden>Dismiss</button>
       </article>
 
       <div class="ghost" role="presentation"></div>
@@ -1016,7 +1078,7 @@ footer a { color: var(--ink); }
       <ol>
         <li>Every alert MUST be worth a human's attention.<span class="snark">An alert nobody reads is a lie.</span></li>
         <li>Every detection MUST be tested before it ships.<span class="snark">Untested detections are guesses. Guesses in production are liabilities.</span></li>
-        <li>Every detection MUST trace back to a risk you named.<span class="snark">If you can't say what it protects, you're collecting logs with extra steps.</span></li>
+        <li>Detection MUST start from risk, not from a rule pack.<span class="snark">If you can't say what it protects, you're collecting logs with extra steps.</span></li>
         <li>Coverage MUST be measured against your actual risk.<span class="snark">A green heatmap on a slide protects the slide.</span></li>
         <li>Noise MUST go down over time, not up.<span class="snark">Volume is not vigilance. An inbox is not a defense.</span></li>
         <li>Fix what creates the alerts, not how fast you close them.<span class="snark">Auto-closing garbage faster is still garbage.</span></li>
@@ -1026,9 +1088,9 @@ footer a { color: var(--ink); }
         <li>Detection logic MUST outlive your SIEM contract.<span class="snark">Rewriting 600 rules by hand is not a migration plan. It's a hostage situation.</span></li>
         <li>A rule that goes silent MUST page someone.<span class="snark">Otherwise your SIEM is a diary with a license fee.</span></li>
         <li>Every rule MUST have an owner, a test, and a reason to exist.<span class="snark">Delete the rest. Yes, that one too.</span></li>
-        <li>Every detection MUST ship with its response.<span class="snark">The rule lives in the SIEM. The runbook lives in OneNote. Neither knows the other exists.</span></li>
+        <li>Response MUST ship with the detection.<span class="snark">The rule lives in the SIEM. The runbook lives in OneNote. Neither knows the other exists.</span></li>
         <li>Threat intel MUST become detections in days, not weeks.<span class="snark">A technique that sits in a PDF for a month is history, not intelligence.</span></li>
-        <li>Threat intel MUST end in a deployed rule, not a report.<span class="snark">You bought 14 feeds this year. Name one detection that came out of them.</span></li>
+        <li>A feed MUST produce detections or MUST be cancelled.<span class="snark">You bought 14 feeds this year. Name one detection that came out of them.</span></li>
         <li>AI MUST accelerate the engineering, not the closing.<span class="snark">Closing 47,832 alerts faster is a faster way to miss the one that mattered.</span></li>
         <li>Burnout MUST be treated as a signal-quality problem.<span class="snark">You can't hire your way out of 47,000 false positives.</span></li>
         <li>Tier 1 MUST NOT be a life sentence.<span class="snark">Closing duplicates for two years is not a career path. It's a symptom.</span></li>
@@ -1056,7 +1118,7 @@ footer a { color: var(--ink); }
         <li><span>04</span><b>monitor</b><span>are we being protected?</span></li>
         <li><span>05</span><b>verify</b><span>are we 100% sure?</span></li>
       </ul>
-      <a class="cta" href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">Resolve Incident</a>
+      <a class="cta" href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">Fix your SOC</a>
     </article>
     <p class="ps">p.s. while you read this, your queue grew by <span id="ps-count">41</span>.</p>
   </div>
@@ -1146,6 +1208,21 @@ footer a { color: var(--ink); }
     document.body.classList.add('booted');
   };
   setTimeout(settle, reduced ? 0 : 6900);
+
+  if (!reduced) {
+    const skip = e => {
+      if (e.type === 'keydown' && (e.metaKey || e.ctrlKey || e.altKey || e.key === 'Tab')) return;
+      settle();
+      stopSkip();
+    };
+    const stopSkip = () => {
+      removeEventListener('keydown', skip);
+      removeEventListener('pointerdown', skip);
+    };
+    addEventListener('keydown', skip);
+    addEventListener('pointerdown', skip);
+    setTimeout(stopSkip, 6900);
+  }
 
   const open = document.getElementById('open-incident');
   if (open) open.addEventListener('click', e => {
