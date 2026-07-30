@@ -209,21 +209,71 @@ a { color: inherit; }
   font-size: clamp(1rem, 2.2vw, 1.375rem);
   margin-left: clamp(0.25rem, 0.9vw, 0.75rem);
 }
-.scroll-cue {
-  padding: 0 1.25rem 1.5rem;
-  max-width: 72rem;
-  margin: 0 auto;
-  width: 100%;
-  color: var(--ink-dim);
-  font-size: 0.75rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  animation: bob 2.2s ease-in-out infinite;
+.open-incident {
+  align-self: flex-start;
+  margin-top: 2.4rem;
+  border: 1px solid var(--sev-critical);
+  color: var(--sev-critical);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  letter-spacing: 0.04em;
+  padding: 0.8rem 1.3rem;
+  text-decoration: none;
+}
+.open-incident:hover, .open-incident:focus-visible {
+  background: var(--sev-critical);
+  color: var(--bg);
 }
 @keyframes blink { 50% { opacity: 0.25; } }
-@keyframes bob { 50% { transform: translateY(0.4rem); } }
+
+/* boot sequence: pure CSS, motion-gated */
+.bootlog { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .bootlog {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    background: var(--bg);
+    padding: 1.5rem 1.25rem;
+    font-size: 0.8125rem;
+    line-height: 2;
+    color: var(--ink-dim);
+    white-space: pre-wrap;
+    animation: bootout 0.3s steps(2) 2.8s forwards;
+  }
+  .bootlog .bad { color: var(--sev-critical); }
+  .bootlog p { opacity: 0; animation: appear 0.01s linear forwards; }
+  .bootlog p:nth-child(1) { animation-delay: 0.3s; }
+  .bootlog p:nth-child(2) { animation-delay: 0.8s; }
+  .bootlog p:nth-child(3) { animation-delay: 1.3s; }
+  .bootlog p:nth-child(4) { animation-delay: 1.8s; }
+  .bootlog p:nth-child(5) { animation-delay: 2.3s; }
+  .chrome { opacity: 0; animation: appear 0.01s linear 3.0s forwards; }
+  .readout { opacity: 0; animation: seqin 0.25s ease-out 3.15s forwards; }
+  .readout p { opacity: 0; animation: appear 0.01s linear forwards; }
+  .readout p:nth-child(1) { animation-delay: 3.3s; }
+  .readout p:nth-child(2) { animation-delay: 4.0s; }
+  .readout p:nth-child(3) { animation-delay: 4.7s; }
+  .readout p:nth-child(4) { animation-delay: 5.4s; }
+  .hero h1 { opacity: 0; animation: slam 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.15) 5.85s forwards; }
+  .sub { opacity: 0; animation: seqin 0.35s ease-out 6.35s forwards; }
+  .open-incident { opacity: 0; animation: seqin 0.35s ease-out 6.8s forwards; }
+}
+@keyframes appear { to { opacity: 1; } }
+@keyframes bootout {
+  to { opacity: 0; visibility: hidden; }
+}
+@keyframes seqin {
+  from { opacity: 0; transform: translateY(0.35rem); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes slam {
+  from { opacity: 0; transform: scale(1.06); }
+  to { opacity: 1; transform: scale(1); }
+}
 @media (prefers-reduced-motion: reduce) {
-  .readout .count::before, .scroll-cue, .alert-card[data-severity="new"] .sev { animation: none; }
+  .readout .count::before, .alert-card[data-severity="new"] .sev { animation: none; }
 }
 
 /* ---------- page 2: queue ---------- */
@@ -507,6 +557,11 @@ a { color: inherit; }
   line-height: 2.1;
   color: var(--ink-dim);
 }
+.stages li {
+  display: grid;
+  grid-template-columns: 2rem 6.2rem 1fr;
+  gap: 0 0.4rem;
+}
 .stages b {
   color: var(--true-positive);
   font-weight: 700;
@@ -561,6 +616,13 @@ footer a { color: var(--ink); }
 
 <section class="page scan" id="p1" aria-label="Page 1: SOC sucks">
   <header class="hero">
+    <div class="bootlog" aria-hidden="true">
+      <p>SECOPS BIOS v4.7.2 · build 1997.03.14</p>
+      <p>memory ............... OK</p>
+      <p>detection rules ...... 612 loaded · <span class="bad">34 silently broken</span></p>
+      <p>log sources .......... 9 of 14 connected</p>
+      <p>triage queue ......... overflowing · ready</p>
+    </div>
     <div class="chrome" role="presentation">
       <span class="chrome-title">Unified Security Operations Console v4.7.2 · end of life</span>
       <span class="chrome-copy">© 1997–2026 · production</span>
@@ -570,11 +632,12 @@ footer a { color: var(--ink); }
         <p>&gt; 08:04. you log in.</p>
         <p>&gt; <span class="count"><span id="alert-count">47,832</span> open alerts</span> +614 overnight</p>
         <p>&gt; overnight pages: 3 · <span class="num">100%</span> false positives</p>
+        <p>&gt; assessment:</p>
       </div>
       <h1>SOC sucks.</h1>
       <p class="sub">We know it does. So do you.</p>
+      <a class="open-incident" href="#p2">Open incident ▾</a>
     </div>
-    <p class="scroll-cue" aria-hidden="true">▾ begin triage</p>
   </header>
 </section>
 
@@ -769,15 +832,15 @@ footer a { color: var(--ink); }
       <p class="meta"><span class="sev">true positive</span>confidence: high · source: verified</p>
       <h2>BUT. We're building the fix.</h2>
       <p class="body">We're not another AI that closes your alerts faster. We fix the detections generating them: weighted by the risk that's actually yours, written once in Sigma and compiled to whatever SIEM you run this year, tested before they ship, monitored so they never break silently, rolled back in one click. We're CraftedSignal, and we build the detection engineering control plane. Cool stuff.</p>
-      <p class="stages-title">The five questions a SOC exists to answer</p>
+      <p class="stages-title">Five questions. One loop.</p>
       <ul class="stages">
-        <li>01 <b>risk</b> · what are we defending?</li>
-        <li>02 <b>threat</b> · what could happen?</li>
-        <li>03 <b>hunt</b> · is it already happening?</li>
-        <li>04 <b>monitor</b> · are we still protected?</li>
-        <li>05 <b>verify</b> · are we sure?</li>
+        <li><span>01</span><b>risk</b><span>what are we defending?</span></li>
+        <li><span>02</span><b>threat</b><span>what could happen?</span></li>
+        <li><span>03</span><b>hunt</b><span>is it already happening?</span></li>
+        <li><span>04</span><b>monitor</b><span>are we still protected?</span></li>
+        <li><span>05</span><b>verify</b><span>are we sure?</span></li>
       </ul>
-      <a class="cta" href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">Resolve →</a>
+      <a class="cta" href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">Resolve Incident</a>
     </article>
     <p class="ps">p.s. while you read this, your queue grew by <span id="ps-count">41</span>.</p>
   </div>
