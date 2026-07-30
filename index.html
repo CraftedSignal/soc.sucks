@@ -20,7 +20,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23ff5a5f'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='bold' text-anchor='middle' fill='%230a0c10'%3E!%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;700&family=Source+Serif+4:opsz,wght@8..60,400&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #0a0c10;
@@ -189,7 +189,7 @@ a { color: inherit; }
   line-height: 1.9;
   color: var(--ink-dim);
 }
-.readout .count { color: var(--sev-critical); font-weight: 700; }
+.readout .count, .readout .num { color: var(--sev-critical); font-weight: 700; }
 .readout .count::before {
   content: "●";
   margin-right: 0.5em;
@@ -198,7 +198,7 @@ a { color: inherit; }
 .hero h1 {
   font-family: var(--display);
   font-weight: 400;
-  font-size: clamp(3.5rem, 16vh, 12rem);
+  font-size: clamp(3rem, min(16.5vw, 16vh), 12rem);
   line-height: 0.9;
   letter-spacing: -0.02em;
   margin: 1.5rem 0 1.25rem;
@@ -207,6 +207,7 @@ a { color: inherit; }
 .sub {
   color: var(--ink-dim);
   font-size: clamp(1rem, 2.2vw, 1.375rem);
+  margin-left: clamp(0.25rem, 0.9vw, 0.75rem);
 }
 .scroll-cue {
   padding: 0 1.25rem 1.5rem;
@@ -395,13 +396,13 @@ a { color: inherit; }
   padding: 3rem 1.25rem 6rem;
 }
 .manifesto h2 {
-  font-size: 0.75rem;
+  font-size: clamp(1rem, 2.2vw, 1.625rem);
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   border-bottom: 2px solid var(--paper-ink);
   padding-bottom: 1rem;
-  margin-top: 4rem;
+  margin-top: 1.5rem;
   margin-bottom: 3.5rem;
 }
 .manifesto ol {
@@ -410,10 +411,10 @@ a { color: inherit; }
 }
 .manifesto li {
   counter-increment: article;
-  font-family: var(--serif);
-  font-size: clamp(1.5rem, 3.4vw, 2.375rem);
-  line-height: 1.25;
-  margin-bottom: 2.2rem;
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: clamp(1.375rem, 2.9vw, 2rem);
+  line-height: 1.4;
+  margin-bottom: 2rem;
   padding-left: 3.2rem;
   position: relative;
 }
@@ -421,7 +422,7 @@ a { color: inherit; }
   content: counter(article, decimal-leading-zero);
   position: absolute;
   left: 0;
-  top: 0.45em;
+  top: 0.62em;
   font-family: var(--mono);
   font-size: 0.75rem;
   font-weight: 700;
@@ -430,10 +431,13 @@ a { color: inherit; }
 }
 .signoff {
   font-family: var(--display);
-  font-size: clamp(2.2rem, 7vw, 7.5rem);
+  font-size: clamp(2.2rem, 7.6vw, 10rem);
   line-height: 1;
   letter-spacing: -0.02em;
-  margin: 5rem 0 2rem;
+  margin: 7.5rem 0 2.5rem;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding: 0 1rem;
   text-align: center;
 }
 
@@ -467,6 +471,20 @@ a { color: inherit; }
   margin: 0.9rem 0 1rem;
 }
 .true-positive .body { font-size: 0.9375rem; max-width: 62ch; color: var(--ink); }
+.stages {
+  margin-top: 1.3rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1.1rem;
+  font-size: 0.75rem;
+  line-height: 2.1;
+  color: var(--ink-dim);
+}
+.stages b {
+  color: var(--true-positive);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
 .cta {
   display: inline-block;
   margin-top: 1.6rem;
@@ -506,6 +524,7 @@ footer a { color: var(--ink); }
   .pair .then::before { content: "software engineering, 2026"; color: rgba(20, 18, 14, 0.45); }
   .pair .now::before { content: "your soc, right now"; }
   .dots { right: 0.55rem; }
+  .alert-card .meta { padding-right: 4.8rem; }
 }
 </style>
 </head>
@@ -515,14 +534,14 @@ footer a { color: var(--ink); }
 <section class="page scan" id="p1" aria-label="Page 1: SOC sucks">
   <header class="hero">
     <div class="chrome" role="presentation">
-      <span class="chrome-title">Unified Security Operations Console v4.7.2 — end of life</span>
+      <span class="chrome-title">Unified Security Operations Console v4.7.2 · end of life</span>
       <span class="chrome-copy">© 1997–2026 · production</span>
     </div>
     <div class="hero-core">
       <div class="readout">
-        <p>&gt; 08:04 — you log in.</p>
+        <p>&gt; 08:04. you log in.</p>
         <p>&gt; <span class="count"><span id="alert-count">47,832</span> open alerts</span> +614 overnight</p>
-        <p>&gt; overnight pages: 2 · both false positives</p>
+        <p>&gt; overnight pages: 3 · <span class="num">100%</span> false positives</p>
       </div>
       <h1>SOC sucks.</h1>
       <p class="sub">We know it does. So do you.</p>
@@ -534,7 +553,7 @@ footer a { color: var(--ink); }
 <section class="page scan" id="p2" aria-label="Page 2: the queue">
   <div class="page-scroll">
     <div class="queue" role="group" aria-label="Alert queue">
-      <p class="toolbar">queue · filter: ALL · sort: oldest unacknowledged · showing 15 of 47,832</p>
+      <p class="toolbar">queue · filter: ALL · sort: oldest unacknowledged · showing 19 of 47,832</p>
 
       <article class="alert-card" data-severity="critical">
         <p class="meta"><span class="sev">critical</span><code>Suspicious_PowerShell_v2_FINAL_old</code> · firing 14× today · assignee: none</p>
@@ -558,6 +577,12 @@ footer a { color: var(--ink); }
       <article class="alert-card" data-severity="critical">
         <p class="meta"><span class="sev">critical</span>severity source: vendor default</p>
         <p class="body">The decommissioned test VM: CRITICAL. The platform that makes all the money: not covered. The SIEM doesn't know which one pays your salary.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="high">
+        <p class="meta"><span class="sev">high</span>description: (empty) · expected behavior: undocumented</p>
+        <p class="body">The rule fires. Nobody wrote down what it's meant to catch, or what normal looks like. Just a name and a severity. The severity is wrong.</p>
         <button class="dismiss" hidden>Dismiss</button>
       </article>
 
@@ -603,6 +628,18 @@ footer a { color: var(--ink); }
         <button class="dismiss" hidden>Dismiss</button>
       </article>
 
+      <article class="alert-card" data-severity="medium">
+        <p class="meta"><span class="sev">medium</span>threat hunt · status: skipped, again</p>
+        <p class="body">Hunting is a manual query and a wall of raw rows. Everyone agrees it matters. Nobody has the time. Maybe next sprint.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="info">
+        <p class="meta"><span class="sev">info</span>threat feed · unread: 212 advisories</p>
+        <p class="body">New techniques drop weekly. Nobody triages the feed. The one that matters to your stack is in there somewhere.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
       <article class="alert-card" data-severity="low">
         <p class="meta"><span class="sev">low</span>threshold raised again · fourth time this quarter</p>
         <p class="body">The dashboard is finally green. So is the attacker's path.</p>
@@ -618,6 +655,12 @@ footer a { color: var(--ink); }
       <article class="alert-card" data-severity="info">
         <p class="meta"><span class="sev">info</span>platform: rebranded again</p>
         <p class="body">SIEM → next-gen SIEM → XDR → XDR with SOAR inside. The acronyms rotate. The queue is forever.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="high">
+        <p class="meta"><span class="sev">high</span>renewal quote: +40% · negotiating leverage: none</p>
+        <p class="body">Every rule is written in the vendor's query language. Leaving means rewriting 600 rules by hand. The vendor knows. The quote shows it.</p>
         <button class="dismiss" hidden>Dismiss</button>
       </article>
 
@@ -645,28 +688,38 @@ footer a { color: var(--ink); }
       <p class="lede">Your dev team ships with version control, tests, review, CI/CD, and one-click rollback. Your SOC edits regex in a production console and hits Save. Software engineering fixed this thirty years ago. Detection engineering never showed up to class.</p>
       <p class="col-heads" aria-hidden="true"><span>Software engineering, 2026</span><span>Your SOC, right now</span></p>
       <div class="compare" role="table" aria-label="Software engineering versus your SOC">
-        <div class="pair" role="row"><p class="then" role="cell">Every change in version control, every author known</p><p class="now" role="cell">The previous version of that rule is in someone's Downloads folder</p></div>
+        <div class="pair" role="row"><p class="then" role="cell">Every change in version control, authored</p><p class="now" role="cell">The previous version of that rule is in someone's Downloads folder</p></div>
         <div class="pair" role="row"><p class="then" role="cell">Tests run on every commit</p><p class="now" role="cell">The test is production</p></div>
+        <div class="pair" role="row"><p class="then" role="cell">CI tells you what breaks before you merge</p><p class="now" role="cell">No impact preview. Deploys are surprises.</p></div>
         <div class="pair" role="row"><p class="then" role="cell">Review required before merge</p><p class="now" role="cell">Edited live in the prod console. Reviewer: nobody.</p></div>
-        <div class="pair" role="row"><p class="then" role="cell">Juniors merge code in week one — tests and review make it safe</p><p class="now" role="cell">Juniors close duplicates for two years. The rules are above their pay grade.</p></div>
+        <div class="pair" role="row"><p class="then" role="cell">Juniors merge code in week one. Tests and review make it safe.</p><p class="now" role="cell">Juniors close duplicates for two years. The rules are above their pay grade.</p></div>
         <div class="pair" role="row"><p class="then" role="cell">Staging environment</p><p class="now" role="cell">Production, but braver</p></div>
         <div class="pair" role="row"><p class="then" role="cell">Rollback is one command</p><p class="now" role="cell">Rollback is trying to remember what it said</p></div>
+        <div class="pair" role="row"><p class="then" role="cell">When a service dies, you know in seconds</p><p class="now" role="cell">A rule dies silently. The first signal is a breach.</p></div>
+        <div class="pair" role="row"><p class="then" role="cell">Dead code gets flagged and deleted</p><p class="now" role="cell">That rule has been running for four years. I guess.</p></div>
+        <div class="pair" role="row"><p class="then" role="cell">Write once, build for every platform</p><p class="now" role="cell">Cross-SIEM is copy-paste regex and prayer</p></div>
+        <div class="pair" role="row"><p class="then" role="cell">A CVE drops and the patch PR opens itself</p><p class="now" role="cell">A new technique drops. It stays in a PDF.</p></div>
         <div class="pair" role="row"><p class="then" role="cell">Priorities set by business impact</p><p class="now" role="cell">Priorities set by vendor default severity</p></div>
         <div class="pair" role="row"><p class="then" role="cell">Docs live in the repo, versioned</p><p class="now" role="cell">Docs live in a OneNote. Somewhere.</p></div>
       </div>
     </div>
+  </div>
+</section>
 
+<section class="page p-paper" id="p4" aria-label="Page 4: the manifesto">
+  <div class="page-scroll">
     <div class="manifesto">
       <h2>The soc.sucks manifesto</h2>
       <ol>
         <li>An alert nobody reads is a lie.</li>
         <li>A detection that can't be tested is a guess. A guess in production is a liability.</li>
-        <li>Coverage is not a green heatmap. Coverage is the risk you actually face — detected, tested, proven.</li>
+        <li>Coverage is not a green heatmap. Coverage is the risk you actually face: detected, tested, proven.</li>
         <li>Noise is not diligence. Volume is not vigilance. An inbox is not a defense.</li>
         <li>Triaging noise faster is not the same as making less noise. The problem was never how fast you close alerts. It's what's creating them.</li>
         <li>Severity should come from what the business stands to lose. Not from a vendor default.</li>
         <li>When everything is critical, nothing is.</li>
         <li>Your detections are code. Version them. Test them. Review them. Roll them back.</li>
+        <li>Detections belong to you. Not to your SIEM vendor's query language.</li>
         <li>A rule that breaks silently turns your SIEM into a diary.</li>
         <li>Every rule deserves an owner, a test, and a reason to exist. Delete the rest.</li>
         <li>Threat intel that takes a week to become a detection is history, not intelligence.</li>
@@ -680,19 +733,20 @@ footer a { color: var(--ink); }
   </div>
 </section>
 
-<section class="page scan p-reveal" id="p4" aria-label="Page 4: the fix">
+<section class="page scan p-reveal" id="p5" aria-label="Page 5: the fix">
   <div class="reveal">
     <p class="toolbar">queue · filter: TRUE_POSITIVE (1) · sort: signal</p>
     <article class="alert-card true-positive">
       <p class="meta"><span class="sev">true positive</span>confidence: high · source: verified</p>
       <h2>BUT. We're building the fix.</h2>
-      <p class="body">We're not another AI that closes your alerts faster. We fix the detections generating them — weighted by the risk that's actually yours, written as code, tested before they ship, monitored so they never break silently, rolled back in one click. We're CraftedSignal, and we build the detection engineering control plane.</p>
+      <p class="body">We're not another AI that closes your alerts faster. We fix the detections generating them: weighted by the risk that's actually yours, written once in Sigma and compiled to whatever SIEM you run this year, tested before they ship, monitored so they never break silently, rolled back in one click. We're CraftedSignal, and we build the detection engineering control plane. Cool stuff.</p>
+      <p class="stages">01 <b>risk</b> what are we defending? · 02 <b>threat</b> what could happen? · 03 <b>hunt</b> is it already happening? · 04 <b>monitor</b> are we still protected? · 05 <b>verify</b> are we sure?</p>
       <a class="cta" href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">Investigate → craftedsignal.io</a>
     </article>
     <p class="ps">p.s. while you read this, your queue grew by <span id="ps-count">41</span>.</p>
   </div>
   <footer>
-    <p>soc.sucks — built with love and resentment by <a href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">CraftedSignal</a>.</p>
+    <p>soc.sucks · built with love and resentment by <a href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">CraftedSignal</a>.</p>
   </footer>
 </section>
 
@@ -709,6 +763,7 @@ footer a { color: var(--ink); }
   <a href="#p2" aria-label="Page 2"></a>
   <a href="#p3" aria-label="Page 3"></a>
   <a href="#p4" aria-label="Page 4"></a>
+  <a href="#p5" aria-label="Page 5"></a>
 </nav>
 
 <script>
