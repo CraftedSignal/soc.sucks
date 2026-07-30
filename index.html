@@ -54,12 +54,13 @@ body {
 }
 ::selection { background: var(--sev-critical); color: var(--bg); }
 a { color: inherit; }
-/* faint CRT scanlines over the dark world */
-body::before {
+/* faint CRT scanlines, dark world only */
+.scan { position: relative; }
+.scan::after {
   content: "";
-  position: fixed;
+  position: absolute;
   inset: 0;
-  z-index: 9;
+  z-index: 5;
   pointer-events: none;
   background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 0, 0, 0.18) 2px 3px);
   opacity: 0.35;
@@ -95,15 +96,20 @@ body::before {
   margin: 0 auto;
   width: 100%;
 }
-.counter {
-  color: var(--sev-critical);
-  font-weight: 700;
-  font-size: clamp(0.8125rem, 1.6vw, 1rem);
-  letter-spacing: 0.12em;
+.readout {
+  align-self: flex-start;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 0.7rem 1.1rem 0.8rem;
+  margin-bottom: 2rem;
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  line-height: 1.9;
+  color: var(--ink-dim);
 }
-.counter::before {
+.readout .count { color: var(--sev-critical); font-weight: 700; }
+.readout .count::before {
   content: "●";
-  margin-right: 0.6em;
+  margin-right: 0.5em;
   animation: blink 1.4s steps(2, start) infinite;
 }
 .hero h1 {
@@ -223,27 +229,114 @@ body::before {
 .ghost:nth-of-type(1) { height: 3.4rem; opacity: 0.8; transform: skewX(-0.5deg); }
 .ghost:nth-of-type(2) { height: 2.6rem; opacity: 0.55; transform: skewX(0.9deg) translateX(0.4rem); }
 .ghost:nth-of-type(3) { height: 1.8rem; opacity: 0.3; transform: skewX(-1.6deg) translateX(-0.5rem); }
+
+/* ---------- frame break ---------- */
+.framebreak {
+  padding: 7rem 1.25rem 8rem;
+  text-align: center;
+}
+.give-up {
+  font-family: var(--display);
+  font-size: clamp(2.5rem, 9vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* ---------- paper world ---------- */
+.paper {
+  background: var(--paper);
+  color: var(--paper-ink);
+}
+.paper ::selection { background: var(--paper-red); color: var(--paper); }
+
+/* ---------- diagnosis ---------- */
+.diagnosis {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 6rem 1.25rem 5rem;
+}
+.diagnosis h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  max-width: 18ch;
+}
+.diagnosis .lede {
+  font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+  line-height: 1.75;
+  max-width: 58ch;
+  margin: 2rem 0 4rem;
+  color: rgba(20, 18, 14, 0.82);
+}
+.col-heads {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--paper-ink);
+  padding-bottom: 0.6rem;
+}
+.col-heads span:last-child { color: var(--paper-red); }
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid rgba(20, 18, 14, 0.18);
+}
+.pair .then {
+  color: rgba(20, 18, 14, 0.62);
+  font-size: 0.9375rem;
+}
+.pair .now {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--paper-red);
+}
+@media (max-width: 47rem) {
+  .col-heads { display: none; }
+  .pair { grid-template-columns: 1fr; gap: 0.4rem; }
+  .pair .then::before, .pair .now::before {
+    display: block;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.15rem;
+  }
+  .pair .then::before { content: "software engineering, 2026"; color: rgba(20, 18, 14, 0.45); }
+  .pair .now::before { content: "your soc, right now"; }
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .counter::before, .scroll-cue { animation: none; }
+  .readout .count::before, .scroll-cue { animation: none; }
 }
 </style>
 </head>
 <body>
-<header class="hero">
+<header class="hero scan">
   <div class="chrome" role="presentation">
     <span class="chrome-title">Unified Security Operations Console v4.7.2 — end of life</span>
-    <span class="chrome-copy">© 1997–2026 · still in production</span>
+    <span class="chrome-copy">© 1997–2026 · production</span>
   </div>
   <div class="hero-core">
-    <p class="counter"><span id="alert-count">47,832</span> open alerts</p>
+    <div class="readout">
+      <p>&gt; 08:04 — you log in.</p>
+      <p>&gt; <span class="count"><span id="alert-count">47,832</span> open alerts</span> · +614 overnight</p>
+    </div>
     <h1>SOC sucks.</h1>
     <p class="sub">We know it does. So do you.</p>
   </div>
   <p class="scroll-cue" aria-hidden="true">▾ begin triage</p>
 </header>
 <main>
-<section class="queue" id="queue" aria-label="Alert queue">
+<section class="queue scan" id="queue" aria-label="Alert queue">
   <p class="toolbar">queue · filter: ALL · sort: oldest unacknowledged</p>
 
   <article class="alert-card" data-severity="critical">
@@ -313,6 +406,12 @@ body::before {
     <button class="dismiss" hidden>Dismiss</button>
   </article>
 
+  <article class="alert-card" data-severity="info">
+    <p class="meta"><span class="sev">info</span>platform: rebranded again</p>
+    <p class="body">SIEM → next-gen SIEM → XDR → XDR with SOAR inside. The acronyms rotate. The queue is forever.</p>
+    <button class="dismiss" hidden>Dismiss</button>
+  </article>
+
   <article class="alert-card" data-severity="new">
     <p class="meta"><span class="sev">new</span>via: vendor webinar</p>
     <p class="body"><strong>AI-powered auto-triage now enabled.</strong> The false positives are still being generated. They're just being closed faster now, by something that also doesn't know why they exist.</p>
@@ -323,6 +422,27 @@ body::before {
   <div class="ghost" role="presentation"></div>
   <div class="ghost" role="presentation"></div>
 </section>
+
+<section class="framebreak scan">
+  <p class="give-up">Forget the queue.</p>
+</section>
+
+<div class="paper">
+<section class="diagnosis" id="diagnosis">
+  <h2>It's 2026. You're detecting like it's 1997.</h2>
+  <p class="lede">Your dev team ships with version control, tests, review, CI/CD, and one-click rollback. Your SOC edits regex in a production console and hits Save. Software engineering fixed this thirty years ago. Detection engineering never showed up to class.</p>
+  <p class="col-heads" aria-hidden="true"><span>Software engineering, 2026</span><span>Your SOC, right now</span></p>
+  <div class="compare" role="table" aria-label="Software engineering versus your SOC">
+    <div class="pair" role="row"><p class="then" role="cell">Every change in version control, every author known</p><p class="now" role="cell">The previous version of that rule is in someone's Downloads folder</p></div>
+    <div class="pair" role="row"><p class="then" role="cell">Tests run on every commit</p><p class="now" role="cell">The test is production</p></div>
+    <div class="pair" role="row"><p class="then" role="cell">Review required before merge</p><p class="now" role="cell">Edited live in the prod console. Reviewer: nobody.</p></div>
+    <div class="pair" role="row"><p class="then" role="cell">Staging environment</p><p class="now" role="cell">Production, but braver</p></div>
+    <div class="pair" role="row"><p class="then" role="cell">Rollback is one command</p><p class="now" role="cell">Rollback is trying to remember what it said</p></div>
+    <div class="pair" role="row"><p class="then" role="cell">Priorities set by business impact</p><p class="now" role="cell">Priorities set by vendor default severity</p></div>
+    <div class="pair" role="row"><p class="then" role="cell">Docs live in the repo, versioned</p><p class="now" role="cell">Docs live in a OneNote. Somewhere.</p></div>
+  </div>
+</section>
+</div>
 </main>
 </body>
 </html>
