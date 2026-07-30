@@ -60,7 +60,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:opsz,wght@8..60,400&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #0a0c10;
@@ -86,7 +86,7 @@
   --paper-red: #b3261e;
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --display: "Archivo Black", system-ui, sans-serif;
-  --serif: "Instrument Serif", Georgia, serif;
+  --serif: "Source Serif 4", Georgia, serif;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
@@ -598,10 +598,11 @@ a { color: inherit; }
 }
 .diagnosis h2 {
   font-family: var(--serif);
-  font-weight: 400;
-  font-size: clamp(2.4rem, 6vw, 4.5rem);
-  line-height: 1.05;
-  letter-spacing: -0.01em;
+  font-weight: 600;
+  font-size: clamp(2.2rem, 5.2vw, 3.9rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
 }
 .diagnosis .lede {
   font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
@@ -676,7 +677,7 @@ a { color: inherit; }
 @media (prefers-reduced-motion: reduce) { .snark { transition: none; } }
 .manifesto li {
   counter-increment: article;
-  font-family: "Source Serif 4", Georgia, serif;
+  font-family: var(--serif);
   font-size: clamp(1.375rem, 2.9vw, 2rem);
   line-height: 1.4;
   margin-bottom: 2rem;
