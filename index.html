@@ -24,7 +24,13 @@
 <style>
 :root {
   --bg: #0a0c10;
+  --boot-bg: #131c2b;
   --panel: #11151c;
+  /* dialog surfaces: neutral grey, deliberately untinted */
+  --panel-flat: #1b1f25;
+  --panel-flat-2: #14171c;
+  --line-flat: #363c45;
+  --ink-soft: #b6c0cf;
   --line: #1e2530;
   --ink: #e8edf4;
   --ink-dim: #8b95a6;
@@ -156,6 +162,8 @@ a { color: inherit; }
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 6;
 }
 .chrome {
   display: flex;
@@ -167,7 +175,9 @@ a { color: inherit; }
   font-size: 0.6875rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink-dim);
+  color: var(--ink-soft);
+  position: relative;
+  z-index: 2;
 }
 .hero-core {
   flex: 1;
@@ -180,14 +190,9 @@ a { color: inherit; }
   width: 100%;
 }
 .readout {
-  align-self: flex-start;
-  border: 1px solid var(--line);
-  background: var(--panel);
-  padding: 0.7rem 1.1rem 0.8rem;
-  margin-bottom: 2rem;
   font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   line-height: 1.9;
-  color: var(--ink-dim);
+  color: var(--ink);
 }
 .readout .count, .readout .num { color: var(--sev-critical); font-weight: 700; }
 .readout .count::before {
@@ -195,35 +200,105 @@ a { color: inherit; }
   margin-right: 0.5em;
   animation: blink 1.4s steps(2, start) infinite;
 }
+/* the legacy console dialog, in-theme */
+.popup {
+  align-self: flex-start;
+  position: relative;
+  z-index: 2;
+  background: var(--panel-flat);
+  border: 1px solid var(--line-flat);
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.55);
+  max-width: 100%;
+}
+.popup-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  background: var(--panel-flat-2);
+  border-bottom: 1px solid var(--line-flat);
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.45rem 0.45rem 0.45rem 0.8rem;
+  cursor: move;
+  touch-action: none;
+  user-select: none;
+}
+.popup.dragging { cursor: grabbing; }
+.popup.dragging .popup-title { cursor: grabbing; }
+.win-btns button { cursor: pointer; }
+.win-btns { display: flex; gap: 4px; }
+.win-btns button {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  font: 700 0.625rem/1 var(--mono);
+  background: none;
+  color: var(--ink-soft);
+  border: 1px solid var(--line-flat);
+  cursor: pointer;
+}
+.win-btns button:hover:not(:disabled) { color: var(--ink); border-color: var(--ink-dim); }
+.win-btns button:disabled { opacity: 0.3; cursor: not-allowed; }
+#win-close { color: var(--sev-critical); border-color: var(--sev-critical); }
+#win-close:hover { background: var(--sev-critical); color: var(--bg); }
+.popup.min .popup-body { display: none; }
+@keyframes winclose {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(0.4rem) scale(0.985); }
+}
+.popup-error {
+  margin-top: 1.1rem;
+  border: 1px solid var(--sev-critical);
+  border-left-width: 4px;
+  background: rgba(255, 90, 95, 0.08);
+  color: var(--sev-critical);
+  font: 700 0.8125rem/1.6 var(--mono);
+  padding: 0.6rem 0.9rem;
+  max-width: 46ch;
+}
+.popup-body { padding: clamp(1.2rem, 3vw, 2.2rem); }
+.popup-sm { margin-bottom: 2.2rem; }
+.popup-sm .popup-body { padding: 0.7rem 1.1rem 0.8rem; }
+.popup-sm .popup-title { font-size: 0.6875rem; }
 .hero h1 {
   font-family: var(--display);
   font-weight: 400;
-  font-size: clamp(3rem, min(16.5vw, 16vh), 12rem);
-  line-height: 0.9;
+  font-size: clamp(2.6rem, min(13.5vw, 13vh), 9.5rem);
+  line-height: 0.92;
   letter-spacing: -0.02em;
-  margin: 1.5rem 0 1.25rem;
   text-wrap: balance;
 }
 .sub {
-  color: var(--ink-dim);
-  font-size: clamp(1rem, 2.2vw, 1.375rem);
-  margin-left: clamp(0.25rem, 0.9vw, 0.75rem);
+  color: var(--ink-soft);
+  font-size: clamp(0.9375rem, 2vw, 1.25rem);
+  margin: 0.9rem 0 1.6rem;
+}
+.popup-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.open-incident, .ignore {
+  display: inline-block;
+  font: 700 0.875rem var(--mono);
+  letter-spacing: 0.03em;
+  padding: 0.7rem 1.3rem;
+  text-decoration: none;
+  cursor: pointer;
 }
 .open-incident {
-  align-self: flex-start;
-  margin-top: 2.4rem;
-  border: 1px solid var(--sev-critical);
-  color: var(--sev-critical);
-  font-weight: 700;
-  font-size: 0.9375rem;
-  letter-spacing: 0.04em;
-  padding: 0.8rem 1.3rem;
-  text-decoration: none;
-}
-.open-incident:hover, .open-incident:focus-visible {
   background: var(--sev-critical);
   color: var(--bg);
+  border: 1px solid var(--sev-critical);
 }
+.open-incident:hover { background: #ff7478; border-color: #ff7478; }
+.ignore {
+  background: none;
+  color: var(--ink-soft);
+  border: 1px solid var(--line-flat);
+}
+.ignore:hover { color: var(--ink); border-color: var(--ink-soft); }
 @keyframes blink { 50% { opacity: 0.25; } }
 
 /* boot sequence: pure CSS, motion-gated */
@@ -234,34 +309,88 @@ a { color: inherit; }
     position: absolute;
     inset: 0;
     z-index: 8;
-    background: var(--bg);
-    padding: 1.5rem 1.25rem;
-    font-size: 0.8125rem;
-    line-height: 2;
-    color: var(--ink-dim);
-    white-space: pre-wrap;
-    animation: bootout 0.3s steps(2) 2.8s forwards;
+    background: var(--boot-bg);
+    padding: 2.75rem 1.25rem 1.5rem;
+    font-size: clamp(0.6875rem, 1.35vh, 0.8125rem);
+    line-height: 1.6;
+    overflow: hidden;
+    color: var(--ink-soft);
+    animation: bootout 0.35s ease-in 2.75s forwards;
   }
   .bootlog .bad { color: var(--sev-critical); }
+  .bootlog .desk { display: none; }
+  /* minimise every window and the BIOS is still sitting there underneath */
+  body.desktop .bootlog {
+    animation: none;
+    opacity: 1;
+    visibility: visible;
+    z-index: 0;
+    transition: opacity 0.4s ease-out;
+  }
+  body.desktop .bootlog .desk {
+    display: block;
+    opacity: 1;
+    animation: none;
+    margin-top: 1.4rem;
+    color: var(--sev-medium);
+  }
   .bootlog p { opacity: 0; animation: appear 0.01s linear forwards; }
-  .bootlog p:nth-child(1) { animation-delay: 0.3s; }
-  .bootlog p:nth-child(2) { animation-delay: 0.8s; }
-  .bootlog p:nth-child(3) { animation-delay: 1.3s; }
-  .bootlog p:nth-child(4) { animation-delay: 1.8s; }
-  .bootlog p:nth-child(5) { animation-delay: 2.3s; }
-  .chrome { opacity: 0; animation: appear 0.01s linear 3.0s forwards; }
-  .readout { opacity: 0; animation: seqin 0.25s ease-out 3.15s forwards; }
+  .bootlog p:nth-child(1) { animation-delay: 0.120s; }
+  .bootlog p:nth-child(2) { animation-delay: 0.174s; }
+  .bootlog p:nth-child(3) { animation-delay: 0.228s; }
+  .bootlog p:nth-child(4) { animation-delay: 0.282s; }
+  .bootlog p:nth-child(5) { animation-delay: 0.336s; }
+  .bootlog p:nth-child(6) { animation-delay: 0.390s; }
+  .bootlog p:nth-child(7) { animation-delay: 0.444s; }
+  .bootlog p:nth-child(8) { animation-delay: 0.498s; }
+  .bootlog p:nth-child(9) { animation-delay: 0.552s; }
+  .bootlog p:nth-child(10) { animation-delay: 0.606s; }
+  .bootlog p:nth-child(11) { animation-delay: 0.660s; }
+  .bootlog p:nth-child(12) { animation-delay: 0.714s; }
+  .bootlog p:nth-child(13) { animation-delay: 0.768s; }
+  .bootlog p:nth-child(14) { animation-delay: 0.822s; }
+  .bootlog p:nth-child(15) { animation-delay: 0.876s; }
+  .bootlog p:nth-child(16) { animation-delay: 0.930s; }
+  .bootlog p:nth-child(17) { animation-delay: 0.984s; }
+  .bootlog p:nth-child(18) { animation-delay: 1.038s; }
+  .bootlog p:nth-child(19) { animation-delay: 1.092s; }
+  .bootlog p:nth-child(20) { animation-delay: 1.146s; }
+  .bootlog p:nth-child(21) { animation-delay: 1.200s; }
+  .bootlog p:nth-child(22) { animation-delay: 1.254s; }
+  .bootlog p:nth-child(23) { animation-delay: 1.308s; }
+  .bootlog p:nth-child(24) { animation-delay: 1.362s; }
+  .bootlog p:nth-child(25) { animation-delay: 1.416s; }
+  .bootlog p:nth-child(26) { animation-delay: 1.470s; }
+  .bootlog p:nth-child(27) { animation-delay: 1.524s; }
+  .bootlog p:nth-child(28) { animation-delay: 1.578s; }
+  .bootlog p:nth-child(29) { animation-delay: 1.632s; }
+  .bootlog p:nth-child(30) { animation-delay: 1.686s; }
+  .bootlog p:nth-child(31) { animation-delay: 1.740s; }
+  .bootlog p:nth-child(32) { animation-delay: 1.794s; }
+  .bootlog p:nth-child(33) { animation-delay: 1.848s; }
+  .bootlog p:nth-child(34) { animation-delay: 1.902s; }
+  .bootlog p:nth-child(35) { animation-delay: 1.956s; }
+  .bootlog p:nth-child(36) { animation-delay: 2.010s; }
+  .bootlog p:nth-child(37) { animation-delay: 2.064s; }
+  .bootlog p:nth-child(38) { animation-delay: 2.118s; }
+  .bootlog p:nth-child(39) { animation-delay: 2.172s; }
+  .bootlog p:nth-child(40) { animation-delay: 2.226s; }
+  .bootlog p:nth-child(41) { animation-delay: 2.280s; }
+  .bootlog p:nth-child(42) { animation-delay: 2.334s; }
+  .chrome { opacity: 0; animation: appear 0.01s linear 2.95s forwards; }
   .readout p { opacity: 0; animation: appear 0.01s linear forwards; }
-  .readout p:nth-child(1) { animation-delay: 3.3s; }
-  .readout p:nth-child(2) { animation-delay: 4.0s; }
-  .readout p:nth-child(3) { animation-delay: 4.7s; }
-  .readout p:nth-child(4) { animation-delay: 5.4s; }
-  .hero h1 { opacity: 0; animation: slam 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.15) 5.85s forwards; }
-  .sub { opacity: 0; animation: seqin 0.35s ease-out 6.35s forwards; }
-  .open-incident { opacity: 0; animation: seqin 0.35s ease-out 6.8s forwards; }
+  .readout p:nth-child(1) { animation-delay: 3.25s; }
+  .readout p:nth-child(2) { animation-delay: 3.85s; }
+  .readout p:nth-child(3) { animation-delay: 4.45s; }
+  .w-readout { opacity: 0; animation: seqin 0.25s ease-out 3.1s forwards; }
+  .w-assessment { opacity: 0; animation: seqin 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.15) 5.15s forwards; }
+  .hero h1 { opacity: 0; animation: slam 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.15) 5.6s forwards; }
+  .sub { opacity: 0; animation: seqin 0.35s ease-out 6s forwards; }
+  .popup-actions { opacity: 0; animation: seqin 0.35s ease-out 6.35s forwards; }
 }
 @keyframes appear { to { opacity: 1; } }
 @keyframes bootout {
+  from { opacity: 1; visibility: visible; }
   to { opacity: 0; visibility: hidden; }
 }
 @keyframes seqin {
@@ -278,7 +407,7 @@ a { color: inherit; }
 
 /* ---------- page 2: queue ---------- */
 .queue {
-  max-width: 58rem;
+  max-width: 68rem;
   margin: 0 auto;
   padding: 2.5rem 1.25rem 0;
 }
@@ -336,7 +465,7 @@ a { color: inherit; }
 }
 .alert-card .body {
   font-size: 0.9375rem;
-  max-width: 62ch;
+  max-width: 78ch;
   margin-top: 0.35rem;
 }
 .alert-card .footnote {
@@ -345,6 +474,14 @@ a { color: inherit; }
   color: var(--ink-dim);
 }
 .alert-card[data-severity="new"] .sev { animation: blink 1.6s steps(2, start) infinite; }
+.queue-title {
+  font-family: var(--mono);
+  font-size: clamp(1rem, 2.4vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
 .dismiss {
   position: absolute;
   top: 0.7rem;
@@ -408,7 +545,6 @@ a { color: inherit; }
 .diagnosis .lede {
   font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
   line-height: 1.75;
-  max-width: 58ch;
   margin: 2rem 0 4rem;
   color: rgba(20, 18, 14, 0.82);
 }
@@ -475,7 +611,7 @@ a { color: inherit; }
   transition: opacity 0.15s ease;
 }
 .manifesto ol:not(.js) li:hover .snark { opacity: 1; }
-.manifesto li.reveal .snark { opacity: 1; }
+.manifesto li.lit .snark { opacity: 1; }
 @media (hover: none) { .snark { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .snark { transition: none; } }
 .manifesto li {
@@ -512,12 +648,14 @@ a { color: inherit; }
 
 /* ---------- page 4: reveal ---------- */
 .p-reveal { display: flex; flex-direction: column; }
+.reveal .outro { margin-top: 1.7rem; }
+.reveal .alert-card .body { max-width: none; }
 .reveal {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 46rem;
+  max-width: 64rem;
   margin: 0 auto;
   padding: 3rem 1.25rem 2rem;
   width: 100%;
@@ -609,6 +747,15 @@ footer a { color: var(--ink); }
   .dots { right: 0.55rem; }
   .alert-card .meta { padding-right: 4.8rem; }
 }
+/* window state: JS-driven, must outrank the boot-sequence intro rules above */
+.booted .w-readout, .booted .w-assessment, .booted .hero h1,
+.booted .sub, .booted .popup-actions, .booted .readout p {
+  animation: none;
+  opacity: 1;
+}
+.popup.closing { animation: winclose 0.18s ease-in forwards; }
+.popup.gone { visibility: hidden; opacity: 0; }
+.popup.reopen { animation: seqin 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.15) forwards; }
 </style>
 </head>
 <body>
@@ -617,26 +764,89 @@ footer a { color: var(--ink); }
 <section class="page scan" id="p1" aria-label="Page 1: SOC sucks">
   <header class="hero">
     <div class="bootlog" aria-hidden="true">
-      <p>SECOPS BIOS v4.7.2 · build 1997.03.14</p>
-      <p>memory ............... OK</p>
-      <p>detection rules ...... 612 loaded · <span class="bad">34 silently broken</span></p>
-      <p>log sources .......... 9 of 14 connected</p>
-      <p>triage queue ......... overflowing · ready</p>
-    </div>
+        <p>SECOPS BIOS v4.7.2 · build 1997.03.14</p>
+        <p>POST ......................... 1 analyst, 0 sleep, 3 dashboards</p>
+        <p>loading IPSec VPN ............ 400s (on-site presence required)</p>
+        <p>loading SIEM ................. slow, always</p>
+        <p>checking SIEM licence ........ <span class="bad">ERROR: ingest cap hit (day 11 of 30)</span></p>
+        <p>dropping firewall logs ....... <span class="bad">to stay under licence</span></p>
+        <p>loading Edge ................. compatibility mode</p>
+        <p>loading EDRs ................. 4 found (Defender, CrowdStrike, two nobody remembers buying)</p>
+        <p>loading EDR exclusions ....... <span class="bad">1,847 (added by IT, 2018)</span></p>
+        <p>loading DLP .................. <span class="bad">ERROR: killed (cpu 100%)</span></p>
+        <p>requisitioning SOAR .......... <span class="bad">ERROR: budget not found</span></p>
+        <p>re-requisitioning SOAR ....... approved · <span class="bad">defer to CAPEX 2027</span></p>
+        <p>loading SOAR ................. playbook not found</p>
+        <p>requesting headcount ......... <span class="bad">ERROR: hiring freeze</span></p>
+        <p>loading AI SOC pilot ......... POC #4 · same 47,832 alerts</p>
+        <p>loading OneNote .............. runbook last saved 2022</p>
+        <p>loading Excel ................ the actual SIEM</p>
+        <p>setting Teams status ........ &ldquo;In a meeting&rdquo; (since 2019)</p>
+        <p>mounting asset inventory ..... spreadsheet, last edited 2021</p>
+        <p>querying CMDB ................ 62% confidence, 100% conviction</p>
+        <p>onboarding log sources ....... 312 connected · <span class="bad">61 silent since April</span></p>
+        <p>normalising timestamps ....... 6 timezones, 2 formats, 1 offset guessed</p>
+        <p>restoring detection tuning ... <span class="bad">overwritten by vendor upgrade</span></p>
+        <p>loading detection rules ...... 1,204 enabled · 41 authored this decade</p>
+        <p>resolving rule owners ........ <span class="bad">ERROR: all left the company</span></p>
+        <p>rendering MITRE heatmap ...... 87% green (never tested)</p>
+        <p>renewing threat intel feed ... <span class="bad">ERROR: budget not found</span></p>
+        <p>syncing threat intel ......... 14 feeds · 0 deduplicated · 3 invoiced</p>
+        <p>parsing latest APT report .... PDF. 71 pages. no IOCs.</p>
+        <p>polling MSSP ................. “please advise”</p>
+        <p>opening phishing mailbox ..... 214 unread · 213 newsletters</p>
+        <p>reading shift handover ....... “nothing happened. see queue.”</p>
+        <p>tracing escalation path ...... <span class="bad">circular</span></p>
+        <p>measuring MTTR ............... metric gamed since Q2</p>
+        <p>loading pentest findings ..... <span class="bad">2023 report · still open</span></p>
+        <p>scheduling purple team ....... Q3. same as last year.</p>
+        <p>rendering CISO dashboard ..... all green</p>
+        <p>checking backups ............. assumed</p>
+        <p>loading on-call rota ......... you. again.</p>
+        <p>brewing coffee ............... <span class="bad">ERROR: pot empty</span></p>
+        <p>mounting alert queue ......... <span class="bad">47,832 items · ready</span></p>
+        <p>SOC analyst profile loaded .. 12 errors · continuing anyway</p>
+        <p class="desk">&gt; minimising a window has never closed a ticket.</p>
+      </div>
     <div class="chrome" role="presentation">
       <span class="chrome-title">Unified Security Operations Console v4.7.2 · end of life</span>
       <span class="chrome-copy">© 1997–2026 · production</span>
     </div>
     <div class="hero-core">
-      <div class="readout">
-        <p>&gt; 08:04. you log in.</p>
-        <p>&gt; <span class="count"><span id="alert-count">47,832</span> open alerts</span> +614 overnight</p>
-        <p>&gt; overnight pages: 3 · <span class="num">100%</span> false positives</p>
-        <p>&gt; assessment:</p>
+      <div class="popup popup-sm w-readout" id="win-shift" data-window>
+        <div class="popup-title">
+          <span data-name>shift-handover.log</span>
+          <span class="win-btns">
+            <button type="button" data-min aria-controls="shift-body" aria-expanded="true" aria-label="Minimize" title="Minimize. It'll still be there.">_</button>
+            <button type="button" aria-label="Maximize" title="Greyed out since 2011." disabled>□</button>
+            <button type="button" data-close aria-label="Close" title="Close it. See how that goes.">✕</button>
+          </span>
+        </div>
+        <div class="popup-body readout" id="shift-body">
+          <p>&gt; 08:04. you log in.</p>
+          <p>&gt; <span class="count"><span id="alert-count">47,832</span> open alerts</span> +614 overnight</p>
+          <p>&gt; overnight pages: 3 · <span class="num">100%</span> false positives</p>
+        </div>
       </div>
-      <h1>SOC sucks.</h1>
-      <p class="sub">We know it does. So do you.</p>
-      <a class="open-incident" href="#p2">Open incident ▾</a>
+      <div class="popup w-assessment" id="popup" data-window>
+        <div class="popup-title">
+          <span data-name>assessment.exe (not responding)</span>
+          <span class="win-btns">
+            <button type="button" data-min aria-controls="popup-body" aria-expanded="true" aria-label="Minimize" title="Minimize. It'll still be there.">_</button>
+            <button type="button" aria-label="Maximize" title="Greyed out since 2011." disabled>□</button>
+            <button type="button" data-close aria-label="Close" title="Close it. See how that goes.">✕</button>
+          </span>
+        </div>
+        <div class="popup-body" id="popup-body">
+          <h1>SOC sucks.</h1>
+          <p class="sub">We know it does. So do you.</p>
+          <div class="popup-actions">
+            <a class="open-incident" id="open-incident" href="#p2">Jump to queue</a>
+            <button class="ignore" id="ignore" type="button">Go back to sleep</button>
+          </div>
+          <p class="popup-error" id="popup-error" role="status" hidden></p>
+        </div>
+      </div>
     </div>
   </header>
 </section>
@@ -644,6 +854,7 @@ footer a { color: var(--ink); }
 <section class="page scan" id="p2" aria-label="Page 2: the queue">
   <div class="page-scroll">
     <div class="queue" role="group" aria-label="Alert queue">
+      <h2 class="queue-title">SOC Headaches Queue</h2>
       <p class="toolbar">queue · filter: ALL · sort: oldest unacknowledged · showing 19 of 47,832</p>
 
       <article class="alert-card" data-severity="critical">
@@ -667,13 +878,13 @@ footer a { color: var(--ink); }
 
       <article class="alert-card" data-severity="critical">
         <p class="meta"><span class="sev">critical</span>severity source: vendor default</p>
-        <p class="body">The decommissioned test VM: CRITICAL. The platform that makes all the money: not covered. The SIEM doesn't know which one pays your salary.</p>
+        <p class="body">The dead test VM: CRITICAL. The platform that makes the money: not covered. The SIEM doesn't know which one pays your salary.</p>
         <button class="dismiss" hidden>Dismiss</button>
       </article>
 
       <article class="alert-card" data-severity="high">
         <p class="meta"><span class="sev">high</span>description: (empty) · expected behavior: undocumented</p>
-        <p class="body">The rule fires. Nobody wrote down what it's meant to catch, or what normal looks like. Just a name and a severity. The severity is wrong.</p>
+        <p class="body">Nobody wrote down what it catches or what normal looks like. Just a name and a severity. The severity is wrong.</p>
         <button class="dismiss" hidden>Dismiss</button>
       </article>
 
@@ -757,7 +968,7 @@ footer a { color: var(--ink); }
 
       <article class="alert-card" data-severity="new">
         <p class="meta"><span class="sev">new</span>via: vendor webinar</p>
-        <p class="body"><strong>AI-powered auto-triage now enabled.</strong> The false positives are still being generated. They're just being closed faster now, by something that also doesn't know why they exist.</p>
+        <p class="body"><strong>AI-powered auto-triage now enabled.</strong> The false positives are still generated. Now they're just closed faster, by something that also doesn't know why they exist.</p>
         <button class="dismiss" hidden>Dismiss</button>
       </article>
 
@@ -800,11 +1011,12 @@ footer a { color: var(--ink); }
 <section class="page p-paper" id="p4" aria-label="Page 4: the manifesto">
   <div class="page-scroll">
     <div class="manifesto">
-      <h2>The soc.sucks manifesto</h2>
-      <p class="rfc">The key words "MUST", "MUST NOT" and "SHOULD" are to be interpreted as described in RFC 2119. (as old as your SIEM)</p>
+      <h2>The SoC Manifesto</h2>
+      <p class="rfc">The key words "MUST", "MUST NOT" and "SHOULD" are to be interpreted as per RFC 2119. (as old as your SIEM)</p>
       <ol>
         <li>Every alert MUST be worth a human's attention.<span class="snark">An alert nobody reads is a lie.</span></li>
         <li>Every detection MUST be tested before it ships.<span class="snark">Untested detections are guesses. Guesses in production are liabilities.</span></li>
+        <li>Every detection MUST trace back to a risk you named.<span class="snark">If you can't say what it protects, you're collecting logs with extra steps.</span></li>
         <li>Coverage MUST be measured against your actual risk.<span class="snark">A green heatmap on a slide protects the slide.</span></li>
         <li>Noise MUST go down over time, not up.<span class="snark">Volume is not vigilance. An inbox is not a defense.</span></li>
         <li>Fix what creates the alerts, not how fast you close them.<span class="snark">Auto-closing garbage faster is still garbage.</span></li>
@@ -814,7 +1026,10 @@ footer a { color: var(--ink); }
         <li>Detection logic MUST outlive your SIEM contract.<span class="snark">Rewriting 600 rules by hand is not a migration plan. It's a hostage situation.</span></li>
         <li>A rule that goes silent MUST page someone.<span class="snark">Otherwise your SIEM is a diary with a license fee.</span></li>
         <li>Every rule MUST have an owner, a test, and a reason to exist.<span class="snark">Delete the rest. Yes, that one too.</span></li>
-        <li>Threat intel MUST become detections in days, not quarters.<span class="snark">A technique that sits in a PDF for a month is history, not intelligence.</span></li>
+        <li>Every detection MUST ship with its response.<span class="snark">The rule lives in the SIEM. The runbook lives in OneNote. Neither knows the other exists.</span></li>
+        <li>Threat intel MUST become detections in days, not weeks.<span class="snark">A technique that sits in a PDF for a month is history, not intelligence.</span></li>
+        <li>Threat intel MUST end in a deployed rule, not a report.<span class="snark">You bought 14 feeds this year. Name one detection that came out of them.</span></li>
+        <li>AI MUST accelerate the engineering, not the closing.<span class="snark">Closing 47,832 alerts faster is a faster way to miss the one that mattered.</span></li>
         <li>Burnout MUST be treated as a signal-quality problem.<span class="snark">You can't hire your way out of 47,000 false positives.</span></li>
         <li>Tier 1 MUST NOT be a life sentence.<span class="snark">Closing duplicates for two years is not a career path. It's a symptom.</span></li>
         <li>Juniors MUST be able to ship safely.<span class="snark">They don't need permission to matter. They need guardrails.</span></li>
@@ -831,14 +1046,15 @@ footer a { color: var(--ink); }
     <article class="alert-card true-positive">
       <p class="meta"><span class="sev">true positive</span>confidence: high · source: verified</p>
       <h2>BUT. We're building the fix.</h2>
-      <p class="body">We're not another AI that closes your alerts faster. We fix the detections generating them: weighted by the risk that's actually yours, written once in Sigma and compiled to whatever SIEM you run this year, tested before they ship, monitored so they never break silently, rolled back in one click. We're CraftedSignal, and we build the detection engineering control plane. Cool stuff.</p>
+      <p class="body">We're not another AI that closes your alerts faster. We fix the detections generating them: weighted by the risk that's actually yours, written once in Sigma and compiled to whatever SIEM you run this year, tested before they ship, monitored so they never break silently, rolled back in one click.</p>
+      <p class="body outro">We're CraftedSignal, and we're building the detection engineering control plane. Cool stuff.</p>
       <p class="stages-title">Five questions. One loop.</p>
       <ul class="stages">
-        <li><span>01</span><b>risk</b><span>what are we defending?</span></li>
-        <li><span>02</span><b>threat</b><span>what could happen?</span></li>
+        <li><span>01</span><b>risk</b><span>what should we be defending?</span></li>
+        <li><span>02</span><b>threat</b><span>what attacks will happen?</span></li>
         <li><span>03</span><b>hunt</b><span>is it already happening?</span></li>
-        <li><span>04</span><b>monitor</b><span>are we still protected?</span></li>
-        <li><span>05</span><b>verify</b><span>are we sure?</span></li>
+        <li><span>04</span><b>monitor</b><span>are we being protected?</span></li>
+        <li><span>05</span><b>verify</b><span>are we 100% sure?</span></li>
       </ul>
       <a class="cta" href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">Resolve Incident</a>
     </article>
@@ -897,20 +1113,152 @@ footer a { color: var(--ink); }
       pop.addEventListener('animationend', () => pop.remove());
     }
   };
+  // dismissing replaces the card with an identical one: the queue never shrinks
+  const backAgain = [
+    '1 new alert',
+    'reopened by correlation rule',
+    'duplicate \u00b7 same rule, new timestamp',
+    'auto-reassigned to you'
+  ];
   const wire = btn => btn.addEventListener('click', () => {
     const card = btn.closest('.alert-card');
+    const n = (+card.dataset.dismissed || 0) + 1;
     const clone = card.cloneNode(true);
-    clone.querySelectorAll('.dup-note').forEach(n => n.remove());
+    clone.dataset.dismissed = n;
+    clone.querySelectorAll('.dup-note').forEach(x => x.remove());
     const note = document.createElement('p');
     note.className = 'dup-note';
-    note.textContent = '1 new alert';
+    note.textContent = backAgain[Math.min(n - 1, backAgain.length - 1)];
     clone.prepend(note);
+    card.replaceWith(clone);
     wire(clone.querySelector('.dismiss'));
-    card.after(clone);
     bump(2);
     points();
   });
   document.querySelectorAll('.queue .dismiss').forEach(btn => { btn.hidden = false; wire(btn); });
+
+  // display:none on a minimised body cancels the boot animations inside it, so
+  // pin everything to its finished state before any window control is touched.
+  let settled = false;
+  const settle = () => {
+    if (settled) return;
+    settled = true;
+    document.body.classList.add('booted');
+  };
+  setTimeout(settle, reduced ? 0 : 6900);
+
+  const open = document.getElementById('open-incident');
+  if (open) open.addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById('p2')
+      .scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+  });
+
+  const err = document.getElementById('popup-error');
+  const ignore = document.getElementById('ignore');
+  const excuses = [
+    "ERROR 0x0000C4RE: sleep unavailable. you do care. that's the whole problem.",
+    "ERROR 0x0000C4RE: still awake. 614 new alerts while you tried.",
+    "ERROR 0x0000C4RE: caring is a memory leak. no patch shipped since 1997."
+  ];
+  let ignored = 0;
+  if (ignore && err) ignore.addEventListener('click', () => {
+    err.textContent = excuses[Math.min(ignored++, excuses.length - 1)];
+    err.hidden = false;
+    bump(614);
+  });
+
+  // window chrome: minimise collapses the body, close always comes back
+  const titles = {
+    'win-shift': {
+      base: 'shift-handover.log',
+      min: 'shift-handover.log (minimised, not read)',
+      back: ['shift-handover.log (reopened)', 'shift-handover.log (still 47,832)', 'shift-handover.log (it is your shift)']
+    },
+    popup: {
+      base: 'assessment.exe (not responding)',
+      min: 'assessment.exe (minimised, not solved)',
+      back: ['assessment.exe (reopened by policy)', 'assessment.exe (still true)', 'assessment.exe (this is your job now)']
+    }
+  };
+
+  const windows = [...document.querySelectorAll('[data-window]')];
+  const syncDesktop = () => document.body.classList.toggle(
+    'desktop', windows.length > 0 && windows.every(w => w.classList.contains('min')));
+
+  // drag windows by the title bar; offsets use left/top so the open/close
+  // transform animations stay independent of where you parked the window.
+  let topZ = 2;
+  windows.forEach(win => {
+    const bar = win.querySelector('.popup-title');
+    if (!bar) return;
+    let id = null, sx = 0, sy = 0, ox = 0, oy = 0;
+
+    bar.addEventListener('pointerdown', e => {
+      if (e.button !== 0 || e.target.closest('.win-btns')) return;
+      settle();
+      win.style.zIndex = ++topZ;
+      id = e.pointerId;
+      sx = e.clientX; sy = e.clientY;
+      ox = parseFloat(win.style.left) || 0;
+      oy = parseFloat(win.style.top) || 0;
+      win.classList.add('dragging');
+      bar.setPointerCapture(id);
+    });
+
+    bar.addEventListener('pointermove', e => {
+      if (e.pointerId !== id) return;
+      const r = win.getBoundingClientRect();
+      let x = ox + e.clientX - sx, y = oy + e.clientY - sy;
+      // keep the title bar grabbable
+      x = Math.min(x, ox + (innerWidth - 60 - r.left));
+      x = Math.max(x, ox + (60 - r.right));
+      y = Math.min(y, oy + (innerHeight - 30 - r.top));
+      y = Math.max(y, oy - r.top);
+      win.style.left = x + 'px';
+      win.style.top = y + 'px';
+    });
+
+    const drop = e => {
+      if (e.pointerId !== id) return;
+      win.classList.remove('dragging');
+      bar.releasePointerCapture(id);
+      id = null;
+    };
+    bar.addEventListener('pointerup', drop);
+    bar.addEventListener('pointercancel', drop);
+
+    const name = win.querySelector('[data-name]');
+    const minBtn = win.querySelector('[data-min]');
+    const closeBtn = win.querySelector('[data-close]');
+    const copy = titles[win.id];
+    let closes = 0;
+
+    if (minBtn) minBtn.addEventListener('click', () => {
+      settle();
+      const min = win.classList.toggle('min');
+      minBtn.setAttribute('aria-expanded', String(!min));
+      name.textContent = min ? copy.min : copy.base;
+      syncDesktop();
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', () => {
+      settle();
+      if (win.classList.contains('closing')) return;
+      const label = copy.back[Math.min(closes++, copy.back.length - 1)];
+      bump(1);
+      win.classList.remove('reopen', 'min');
+      if (minBtn) minBtn.setAttribute('aria-expanded', 'true');
+      syncDesktop();
+      win.classList.add('closing');
+      setTimeout(() => win.classList.add('gone'), reduced ? 0 : 180);
+      setTimeout(() => {
+        name.textContent = label;
+        win.classList.remove('closing', 'gone');
+        win.classList.add('reopen');
+      }, reduced ? 400 : 900);
+    });
+  });
 
   const list = document.querySelector('.manifesto ol');
   if (list && matchMedia('(hover: hover)').matches) {
@@ -918,9 +1266,9 @@ footer a { color: var(--ink); }
     let cur = null;
     const set = li => {
       if (cur === li) return;
-      if (cur) cur.classList.remove('reveal');
+      if (cur) cur.classList.remove('lit');
       cur = li;
-      if (cur) cur.classList.add('reveal');
+      if (cur) cur.classList.add('lit');
     };
     list.addEventListener('mousemove', e => set(e.target.closest('li')));
     list.addEventListener('mouseleave', () => set(null));
