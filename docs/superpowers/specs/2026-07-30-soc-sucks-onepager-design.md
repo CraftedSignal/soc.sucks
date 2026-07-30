@@ -12,41 +12,65 @@ Decisions made during brainstorming:
 
 - **Tone:** Aikido-level spice — sharp, sarcastic, the occasional "bullshit"-tier swear where it lands. Shareable in a work Slack.
 - **Branding:** Manifesto-first, brand-last. CraftedSignal appears only in the final reveal.
-- **Strategic through-line:** AI auto-triage is part of the problem, not the fix — everyone sells faster ways to close alerts; nobody fixes what generates them. CraftedSignal's differentiation (fix detections upstream) is the payoff of this argument.
+- **Strategic through-line #1:** AI auto-triage is part of the problem, not the fix — everyone sells faster ways to close alerts; nobody fixes what generates them. CraftedSignal's differentiation (fix detections upstream) is the payoff of this argument.
+- **Strategic through-line #2 (the diagnosis):** SOCs run detection like software was developed in the 1990s — no version control, no tests, no review, no staging, no rollback, deploy = paste into the prod console, docs in a OneNote. Software engineering solved all of this decades ago; detection engineering never adopted it. The queue shows the symptoms; this names the disease; detections-as-code is the cure.
+- **Strategic through-line #3 (risk disconnect):** the SOC is disconnected from business risk — severity comes from vendor defaults, not from what the business would actually lose. CraftedSignal's framing: detections for threats you don't face, blind spots for the ones you do.
 - Keep the existing site's joke ("We know it does.") as the opening beat.
 
-## Page structure (five beats, one scroll)
+## Page structure (six beats, one scroll)
 
 ### 1. Hero — the SIEM boots up
 
-- Fake console chrome bar: `UNIFIED SECURITY OPERATIONS CONSOLE v4.7.2 — END OF LIFE`.
+- Fake console chrome bar: `UNIFIED SECURITY OPERATIONS CONSOLE v4.7.2 — END OF LIFE` · `© 1997–2026 · still in production`.
 - Live-ticking counter: starts at `47,832 OPEN ALERTS`, increments on an irregular interval.
 - Huge display type: **"SOC sucks."**
 - Subline: *"We know it does. So do you."*
 - Scroll cue: `▾ begin triage`.
 
-### 2. The queue — ten alert cards
+### 2. The queue — twelve alert cards
 
-Each card: severity chip, monospace rule name, metadata line (age / count / assignee / status), deadpan body copy. Copy deck (microcopy may be polished during implementation; tone and meaning are fixed):
+Each card: severity chip, monospace rule name, metadata line (age / count / assignee / status), deadpan one-liner body. Cards are visually compact so the scroll rhythm stays quick — an overlong queue is on-theme, a slow one is not. Copy deck (microcopy may be polished during implementation; tone and meaning are fixed):
 
 1. `CRITICAL` · `Suspicious_PowerShell_v2_FINAL_old` · firing 14× today · assignee: none — *Same rule. Same false positive. Nobody remembers who wrote it. Nobody dares delete it.*
-2. `HIGH` · silent for 212 days — *Stopped matching when the log source changed in March. Nothing broke. Nothing fired. Nobody noticed.* (Supporting stat: industry data says only ~5% of deployed detections actually work.)
-3. `INFO` · recurring: monthly, before the board meeting — *The slide says 87% MITRE coverage. The heatmap is green. Nobody has ever tested it.*
-4. `CRITICAL` · 03:12 AM — *Paged. Escalated. False positive by 03:19. Sleep not recovered. Trust not recovered either.*
-5. `MEDIUM` · ticket #4821 · opened 14 months ago — *Tuning request. Status: backlog. Priority: someday.*
-6. `HIGH` · deployed straight to production — *Test coverage: "worked in the lab". Rollback plan: prayer.*
-7. `LOW` · threshold raised again, fourth time this quarter — *The dashboard is finally green. So is the attacker's path.*
-8. `NEW` · via: vendor webinar — **AI-powered auto-triage now enabled.** *The false positives are still being generated. They're just being closed faster now, by something that also doesn't know why they exist.*
-9. `MEDIUM` · author: left the company two years ago — *The rule stays. Changing it is archaeology. Deleting it is liability.*
-10. `INFO` · audit season — *The auditor asked if the detections work. We showed them a spreadsheet. Everyone nodded.*
+2. `CRITICAL` · 03:12 AM — *Paged. Escalated. False positive by 03:19. Sleep not recovered. Trust not recovered either.*
+3. `HIGH` · silent for 212 days — *Stopped matching when the log source changed in March. Nothing broke. Nothing fired. Nobody noticed.* (Supporting stat: industry data says only ~5% of deployed detections actually work.)
+4. `CRITICAL` · severity source: vendor default — *The decommissioned test VM: CRITICAL. The platform that makes all the money: not covered. The SIEM doesn't know which one pays your salary.*
+5. `INFO` · recurring: monthly, before the board meeting — *The slide says 87% MITRE coverage. The heatmap is green. Nobody has ever tested it.*
+6. `HIGH` · deployed via: pasting into the prod console — *Test coverage: "worked in the lab". Version history: none. Rollback plan: prayer.*
+7. `MEDIUM` · author: left the company two years ago — *The rule stays. Changing it is archaeology. Deleting it is liability.*
+8. `MEDIUM` · runbook: `SOC_Procedures_FINAL_(copy)(2).one` — *The runbook is in a OneNote. Somewhere. Last updated three years ago by someone who left. Step 4 references a console that no longer exists.*
+9. `MEDIUM` · ticket #4821 · opened 14 months ago — *Tuning request. Status: backlog. Priority: someday.*
+10. `LOW` · threshold raised again, fourth time this quarter — *The dashboard is finally green. So is the attacker's path.*
+11. `INFO` · audit season — *The auditor asked if the detections work. We showed them a spreadsheet. Everyone nodded.*
+12. `NEW` · via: vendor webinar — **AI-powered auto-triage now enabled.** *The false positives are still being generated. They're just being closed faster now, by something that also doesn't know why they exist.* (Deliberately the last card — even the shiny new thing is just another alert in the queue; leads into the diagnosis.)
 
 Interactive gag: clicking **Dismiss** on a card spawns a duplicate card (*"1 new alert"*) and ticks the hero counter up. Progressive enhancement only — page fully readable without JS.
 
 ### 3. The frame break
 
-Near the end of the queue the cards visually degrade (glitch/fade). The page gives up: **"Forget the queue."** Hard contrast switch from dark SIEM to bone-white manifesto.
+After the last card the queue visually degrades (glitch/fade). The page gives up: **"Forget the queue."** Hard contrast switch from dark SIEM to bone-white.
 
-### 4. The manifesto
+### 4. The diagnosis — "It's 2026. You're detecting like it's 1997."
+
+White section, before the manifesto. Intro copy:
+
+> *Your dev team ships with version control, tests, review, CI/CD, and one-click rollback. Your SOC edits regex in a production console and hits Save. Software engineering fixed this thirty years ago. Detection engineering never showed up to class.*
+
+Side-by-side comparison (two columns: **Software engineering, 2026** vs **Your SOC, right now**):
+
+| Software engineering, 2026 | Your SOC, right now |
+|---|---|
+| Every change in version control, every author known | The previous version of that rule is in someone's Downloads folder |
+| Tests run on every commit | The test is production |
+| Review required before merge | Edited live in the prod console. Reviewer: nobody. |
+| Staging environment | Production, but braver |
+| Rollback is one command | Rollback is trying to remember what it said |
+| Priorities set by business impact | Priorities set by vendor default severity |
+| Docs live in the repo, versioned | Docs live in a OneNote. Somewhere. |
+
+On mobile the table collapses to stacked pairs.
+
+### 5. The manifesto
 
 Off-white background, massive editorial type, numbered articles. Title: **The soc.sucks manifesto**.
 
@@ -55,19 +79,21 @@ Off-white background, massive editorial type, numbered articles. Title: **The so
 3. Coverage is not a heatmap on a slide. Coverage is what fires when it matters.
 4. Noise is not diligence. Volume is not vigilance.
 5. Triaging noise faster is not the same as making less noise. The problem was never how fast you close alerts. It's what's creating them. *(thesis)*
-6. A rule that breaks silently turns your SIEM into a diary.
-7. Burnout is not a staffing problem. It's a signal-quality problem.
-8. You were hired to hunt threats. Not to close tabs.
+6. Severity should come from what the business stands to lose. Not from a vendor default.
+7. Your detections are code. Version them. Test them. Review them. Roll them back.
+8. A rule that breaks silently turns your SIEM into a diary.
+9. Burnout is not a staffing problem. It's a signal-quality problem.
+10. You were hired to hunt threats. Not to close tabs.
 
 Sign-off: **"SOC doesn't have to suck."**
 
-### 5. The reveal — `TRUE POSITIVE (1)`
+### 6. The reveal — `TRUE POSITIVE (1)`
 
 Back to the dark queue, but filtered: `filter: TRUE_POSITIVE (1)`. One clean card in a distinct accent (calm green — the only green on the page):
 
 - Title: *Detection: a team building the fix.*
 - Meta: `confidence: high · source: verified`
-- Body: *"We're not another AI that closes your alerts faster. We fix the detections generating them — tested before they ship, monitored so they never break silently, tuned so the noise never reaches the queue. We're CraftedSignal, and we build the detection engineering control plane."*
+- Body: *"We're not another AI that closes your alerts faster. We fix the detections generating them — weighted by the risk that's actually yours, written as code, tested before they ship, monitored so they never break silently, rolled back in one click. We're CraftedSignal, and we build the detection engineering control plane."*
 - CTA button: **Investigate → craftedsignal.io** linking to `https://craftedsignal.io/?utm_source=soc.sucks&utm_medium=referral&utm_campaign=manifesto`.
 
 Footer: *"soc.sucks — built with love and resentment by CraftedSignal."*
