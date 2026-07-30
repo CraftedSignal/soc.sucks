@@ -132,6 +132,97 @@ body::before {
 }
 @keyframes blink { 50% { opacity: 0.25; } }
 @keyframes bob { 50% { transform: translateY(0.4rem); } }
+
+/* ---------- queue ---------- */
+.queue {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 3.5rem 1.25rem 0;
+}
+.toolbar {
+  color: var(--ink-dim);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+.alert-card {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--sev, var(--ink-dim));
+  padding: 0.8rem 1rem 0.9rem;
+  margin-bottom: 0.75rem;
+}
+.alert-card[data-severity="critical"] { --sev: var(--sev-critical); }
+.alert-card[data-severity="high"]     { --sev: var(--sev-high); }
+.alert-card[data-severity="medium"]   { --sev: var(--sev-medium); }
+.alert-card[data-severity="low"]      { --sev: var(--sev-low); }
+.alert-card[data-severity="info"]     { --sev: var(--sev-info); }
+.alert-card[data-severity="new"]      { --sev: var(--sev-new); }
+.alert-card .meta {
+  font-size: 0.75rem;
+  color: var(--ink-dim);
+  line-height: 1.7;
+}
+.alert-card .meta code { color: var(--ink); }
+.sev {
+  color: var(--sev, var(--ink-dim));
+  font-weight: 700;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 1px solid currentcolor;
+  padding: 0.1rem 0.4rem;
+  margin-right: 0.5rem;
+  white-space: nowrap;
+}
+.alert-card .body {
+  font-size: 0.9375rem;
+  max-width: 62ch;
+  margin-top: 0.35rem;
+}
+.alert-card .footnote {
+  margin-top: 0.4rem;
+  font-size: 0.6875rem;
+  color: var(--ink-dim);
+}
+.alert-card[data-severity="new"] .sev { animation: blink 1.6s steps(2, start) infinite; }
+.dismiss {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.8rem;
+  font: 700 0.6875rem var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  background: none;
+  border: 1px solid var(--line);
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+  min-height: 1.75rem;
+}
+.dismiss:hover { color: var(--ink); border-color: var(--ink-dim); }
+.dup-note {
+  color: var(--sev-critical);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+/* the queue erodes just before the frame break */
+.ghost {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  background: repeating-linear-gradient(-45deg, transparent 0 6px, rgba(139, 149, 166, 0.07) 6px 12px);
+  margin-bottom: 0.75rem;
+}
+.ghost:nth-of-type(1) { height: 3.4rem; opacity: 0.8; transform: skewX(-0.5deg); }
+.ghost:nth-of-type(2) { height: 2.6rem; opacity: 0.55; transform: skewX(0.9deg) translateX(0.4rem); }
+.ghost:nth-of-type(3) { height: 1.8rem; opacity: 0.3; transform: skewX(-1.6deg) translateX(-0.5rem); }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .counter::before, .scroll-cue { animation: none; }
@@ -152,6 +243,86 @@ body::before {
   <p class="scroll-cue" aria-hidden="true">▾ begin triage</p>
 </header>
 <main>
+<section class="queue" id="queue" aria-label="Alert queue">
+  <p class="toolbar">queue · filter: ALL · sort: oldest unacknowledged</p>
+
+  <article class="alert-card" data-severity="critical">
+    <p class="meta"><span class="sev">critical</span><code>Suspicious_PowerShell_v2_FINAL_old</code> · firing 14× today · assignee: none</p>
+    <p class="body">Same rule. Same false positive. Nobody remembers who wrote it. Nobody dares delete it.</p>
+    <button class="dismiss" hidden>Dismiss</button>
+  </article>
+
+  <article class="alert-card" data-severity="critical">
+    <p class="meta"><span class="sev">critical</span>03:12 AM · escalated · on-call: you</p>
+    <p class="body">Paged. Escalated. False positive by 03:19. Sleep not recovered. Trust not recovered either.</p>
+    <button class="dismiss" hidden>Dismiss</button>
+  </article>
+
+  <article class="alert-card" data-severity="high">
+    <p class="meta"><span class="sev">high</span>silent for 212 days · last fired: March</p>
+    <p class="body">Stopped matching when the log source changed in March. Nothing broke. Nothing fired. Nobody noticed.</p>
+    <p class="footnote">industry estimate: ~5% of deployed detections actually work</p>
+    <button class="dismiss" hidden>Dismiss</button>
+  </article>
+
+  <article class="alert-card" data-severity="critical">
+    <p class="meta"><span class="sev">critical</span>severity source: vendor default</p>
+    <p class="body">The decommissioned test VM: CRITICAL. The platform that makes all the money: not covered. The SIEM doesn't know which one pays your salary.</p>
+    <button class="dismiss" hidden>Dismiss</button>
+  </article>
+
+  <article class="alert-card" data-severity="info">
+    <p class="meta"><span class="sev">info</span>recurring: monthly, before the board meeting</p>
+    <p class="body">The slide says 87% MITRE coverage. The heatmap is green. Nobody has ever tested it.</p>
+    <button class="dismiss" hidden>Dismiss</button>
+  </article>
+
+  <article class="alert-card" data-severity="high">
+    <p class="meta"><span class="sev">high</span>deployed via: pasting into the prod console</p>
+    <p class="body">Test coverage: "worked in the lab". Version history: none. Rollback plan: prayer.</p>
+    <button class="dismiss" hidden>Dismiss</button>
+  </article>
+
+  <article class="alert-card" data-severity="medium">
+    <p class="meta"><span class="sev">medium</span>author: left the company two years ago</p>
+    <p class="body">The rule stays. Changing it is archaeology. Deleting it is liability.</p>
+    <button class="dismiss" hidden>Dismiss</button>
+  </article>
+
+  <article class="alert-card" data-severity="medium">
+    <p class="meta"><span class="sev">medium</span>runbook: <code>SOC_Procedures_FINAL_(copy)(2).one</code></p>
+    <p class="body">The runbook is in a OneNote. Somewhere. Last updated three years ago by someone who left. Step 4 references a console that no longer exists.</p>
+    <button class="dismiss" hidden>Dismiss</button>
+  </article>
+
+  <article class="alert-card" data-severity="medium">
+    <p class="meta"><span class="sev">medium</span>ticket #4821 · opened 14 months ago</p>
+    <p class="body">Tuning request. Status: backlog. Priority: someday.</p>
+    <button class="dismiss" hidden>Dismiss</button>
+  </article>
+
+  <article class="alert-card" data-severity="low">
+    <p class="meta"><span class="sev">low</span>threshold raised again · fourth time this quarter</p>
+    <p class="body">The dashboard is finally green. So is the attacker's path.</p>
+    <button class="dismiss" hidden>Dismiss</button>
+  </article>
+
+  <article class="alert-card" data-severity="info">
+    <p class="meta"><span class="sev">info</span>audit season</p>
+    <p class="body">The auditor asked if the detections work. We showed them a spreadsheet. Everyone nodded.</p>
+    <button class="dismiss" hidden>Dismiss</button>
+  </article>
+
+  <article class="alert-card" data-severity="new">
+    <p class="meta"><span class="sev">new</span>via: vendor webinar</p>
+    <p class="body"><strong>AI-powered auto-triage now enabled.</strong> The false positives are still being generated. They're just being closed faster now, by something that also doesn't know why they exist.</p>
+    <button class="dismiss" hidden>Dismiss</button>
+  </article>
+
+  <div class="ghost" role="presentation"></div>
+  <div class="ghost" role="presentation"></div>
+  <div class="ghost" role="presentation"></div>
+</section>
 </main>
 </body>
 </html>
