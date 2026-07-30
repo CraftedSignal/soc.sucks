@@ -43,7 +43,7 @@
   --serif: "Instrument Serif", Georgia, serif;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html, body { height: 100%; }
 body {
   background: var(--bg);
   color: var(--ink);
@@ -51,11 +51,31 @@ body {
   font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;
 }
 ::selection { background: var(--sev-critical); color: var(--bg); }
 a { color: inherit; }
+
+/* ---------- the deck ---------- */
+.deck {
+  height: 100svh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+.page {
+  height: 100svh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  position: relative;
+  overflow: hidden;
+}
+.page-scroll { height: 100%; overflow-y: auto; }
+@media (prefers-reduced-motion: reduce) {
+  .deck { scroll-behavior: auto; }
+}
+
 /* faint CRT scanlines, dark world only */
-.scan { position: relative; }
 .scan::after {
   content: "";
   position: absolute;
@@ -67,12 +87,75 @@ a { color: inherit; }
   mix-blend-mode: overlay;
 }
 
-/* ---------- hero ---------- */
-.hero {
-  min-height: 100svh;
+/* ---------- triage score HUD ---------- */
+.score {
+  position: fixed;
+  top: 2.8rem;
+  right: 1.1rem;
+  z-index: 30;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 0.5rem 0.85rem 0.55rem;
+  text-align: right;
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  display: none;
+}
+.score.on { display: block; }
+.score .total {
+  display: block;
+  color: var(--sev-medium);
+  font-weight: 700;
+  font-size: 1.125rem;
+  letter-spacing: 0.06em;
+}
+.score .note { display: block; font-size: 0.5625rem; }
+.score .pop {
+  position: absolute;
+  right: 0.6rem;
+  top: -1.1rem;
+  color: var(--sev-medium);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  animation: rise 0.9s ease-out forwards;
+}
+@keyframes rise {
+  from { opacity: 1; transform: translateY(0.6rem); }
+  to { opacity: 0; transform: translateY(-0.9rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .score .pop { animation: none; opacity: 0; }
+}
+
+/* ---------- page dots ---------- */
+.dots {
+  position: fixed;
+  right: 1.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid var(--line);
+  gap: 0.7rem;
+  mix-blend-mode: difference;
+}
+.dots a {
+  width: 0.55rem;
+  height: 0.55rem;
+  border: 1px solid #fff;
+  display: block;
+}
+.dots a[aria-current="true"] { background: #fff; }
+.dots a:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* ---------- page 1: hero ---------- */
+.hero {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .chrome {
   display: flex;
@@ -115,7 +198,7 @@ a { color: inherit; }
 .hero h1 {
   font-family: var(--display);
   font-weight: 400;
-  font-size: clamp(3.5rem, 17vw, 12rem);
+  font-size: clamp(3.5rem, 16vh, 12rem);
   line-height: 0.9;
   letter-spacing: -0.02em;
   margin: 1.5rem 0 1.25rem;
@@ -138,12 +221,15 @@ a { color: inherit; }
 }
 @keyframes blink { 50% { opacity: 0.25; } }
 @keyframes bob { 50% { transform: translateY(0.4rem); } }
+@media (prefers-reduced-motion: reduce) {
+  .readout .count::before, .scroll-cue, .alert-card[data-severity="new"] .sev { animation: none; }
+}
 
-/* ---------- queue ---------- */
+/* ---------- page 2: queue ---------- */
 .queue {
-  max-width: 46rem;
+  max-width: 58rem;
   margin: 0 auto;
-  padding: 3.5rem 1.25rem 0;
+  padding: 2.5rem 1.25rem 0;
 }
 .toolbar {
   color: var(--ink-dim);
@@ -153,6 +239,18 @@ a { color: inherit; }
   border-bottom: 1px solid var(--line);
   padding-bottom: 0.6rem;
   margin-bottom: 1.25rem;
+}
+.queue .toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  background: var(--bg);
+  padding-top: 1rem;
+}
+.ps {
+  margin-top: 1.2rem;
+  font-size: 0.75rem;
+  color: var(--ink-dim);
 }
 .alert-card {
   position: relative;
@@ -219,7 +317,7 @@ a { color: inherit; }
   text-transform: uppercase;
   margin-bottom: 0.3rem;
 }
-/* the queue erodes just before the frame break */
+/* the queue erodes at its end */
 .ghost {
   border: 1px solid var(--line);
   border-left: 3px solid var(--line);
@@ -229,10 +327,8 @@ a { color: inherit; }
 .ghost:nth-of-type(1) { height: 3.4rem; opacity: 0.8; transform: skewX(-0.5deg); }
 .ghost:nth-of-type(2) { height: 2.6rem; opacity: 0.55; transform: skewX(0.9deg) translateX(0.4rem); }
 .ghost:nth-of-type(3) { height: 1.8rem; opacity: 0.3; transform: skewX(-1.6deg) translateX(-0.5rem); }
-
-/* ---------- frame break ---------- */
 .framebreak {
-  padding: 7rem 1.25rem 8rem;
+  padding: 6rem 1.25rem 7rem;
   text-align: center;
 }
 .give-up {
@@ -243,18 +339,13 @@ a { color: inherit; }
   text-wrap: balance;
 }
 
-/* ---------- paper world ---------- */
-.paper {
-  background: var(--paper);
-  color: var(--paper-ink);
-}
-.paper ::selection { background: var(--paper-red); color: var(--paper); }
-
-/* ---------- diagnosis ---------- */
+/* ---------- page 3: paper ---------- */
+.p-paper { background: var(--paper); color: var(--paper-ink); }
+.p-paper ::selection { background: var(--paper-red); color: var(--paper); }
 .diagnosis {
   max-width: 62rem;
   margin: 0 auto;
-  padding: 6rem 1.25rem 5rem;
+  padding: 5rem 1.25rem 4rem;
 }
 .diagnosis h2 {
   font-family: var(--serif);
@@ -262,9 +353,6 @@ a { color: inherit; }
   font-size: clamp(2.4rem, 6vw, 4.5rem);
   line-height: 1.05;
   letter-spacing: -0.01em;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  padding: 0 1.25rem;
 }
 .diagnosis .lede {
   font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
@@ -301,11 +389,10 @@ a { color: inherit; }
   font-size: 0.9375rem;
   color: var(--paper-red);
 }
-/* ---------- manifesto ---------- */
 .manifesto {
   max-width: 54rem;
   margin: 0 auto;
-  padding: 3rem 1.25rem 7rem;
+  padding: 3rem 1.25rem 6rem;
 }
 .manifesto h2 {
   font-size: 0.75rem;
@@ -343,25 +430,24 @@ a { color: inherit; }
 }
 .signoff {
   font-family: var(--display);
-  font-size: clamp(2.2rem, 7.4vw, 8.5rem);
+  font-size: clamp(2.2rem, 7vw, 7.5rem);
   line-height: 1;
   letter-spacing: -0.02em;
-  margin-top: 5rem;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  padding: 0 1.25rem;
-  text-wrap: balance;
+  margin: 5rem 0 2rem;
+  text-align: center;
 }
 
-/* ---------- reveal ---------- */
+/* ---------- page 4: reveal ---------- */
+.p-reveal { display: flex; flex-direction: column; }
 .reveal {
-  min-height: 88svh;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   max-width: 46rem;
   margin: 0 auto;
-  padding: 5rem 1.25rem;
+  padding: 3rem 1.25rem 2rem;
+  width: 100%;
 }
 .reveal .toolbar { color: var(--true-positive); border-color: rgba(61, 220, 132, 0.25); }
 .true-positive {
@@ -393,8 +479,6 @@ a { color: inherit; }
   padding: 0.85rem 1.4rem;
 }
 .cta:hover, .cta:focus-visible { background: #5ce89a; }
-
-/* ---------- footer ---------- */
 footer {
   border-top: 1px solid var(--line);
   padding: 1.4rem 1.25rem 1.6rem;
@@ -405,8 +489,9 @@ footer {
 footer a { color: var(--ink); }
 
 :focus-visible { outline: 2px solid var(--sev-critical); outline-offset: 2px; }
-.paper :focus-visible { outline-color: var(--paper-red); }
+.p-paper :focus-visible { outline-color: var(--paper-red); }
 .cta:focus-visible { outline-color: var(--true-positive); }
+
 @media (max-width: 47rem) {
   .col-heads { display: none; }
   .pair { grid-template-columns: 1fr; gap: 0.4rem; }
@@ -420,179 +505,244 @@ footer a { color: var(--ink); }
   }
   .pair .then::before { content: "software engineering, 2026"; color: rgba(20, 18, 14, 0.45); }
   .pair .now::before { content: "your soc, right now"; }
-}
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .readout .count::before, .scroll-cue { animation: none; }
+  .dots { right: 0.55rem; }
 }
 </style>
 </head>
 <body>
-<header class="hero scan">
-  <div class="chrome" role="presentation">
-    <span class="chrome-title">Unified Security Operations Console v4.7.2 — end of life</span>
-    <span class="chrome-copy">© 1997–2026 · production</span>
-  </div>
-  <div class="hero-core">
-    <div class="readout">
-      <p>&gt; 08:04 — you log in.</p>
-      <p>&gt; <span class="count"><span id="alert-count">47,832</span> open alerts</span> +614 overnight</p>
+<div class="deck" id="deck">
+
+<section class="page scan" id="p1" aria-label="Page 1: SOC sucks">
+  <header class="hero">
+    <div class="chrome" role="presentation">
+      <span class="chrome-title">Unified Security Operations Console v4.7.2 — end of life</span>
+      <span class="chrome-copy">© 1997–2026 · production</span>
     </div>
-    <h1>SOC sucks.</h1>
-    <p class="sub">We know it does. So do you.</p>
+    <div class="hero-core">
+      <div class="readout">
+        <p>&gt; 08:04 — you log in.</p>
+        <p>&gt; <span class="count"><span id="alert-count">47,832</span> open alerts</span> +614 overnight</p>
+        <p>&gt; overnight pages: 2 · both false positives</p>
+      </div>
+      <h1>SOC sucks.</h1>
+      <p class="sub">We know it does. So do you.</p>
+    </div>
+    <p class="scroll-cue" aria-hidden="true">▾ begin triage</p>
+  </header>
+</section>
+
+<section class="page scan" id="p2" aria-label="Page 2: the queue">
+  <div class="page-scroll">
+    <div class="queue" role="group" aria-label="Alert queue">
+      <p class="toolbar">queue · filter: ALL · sort: oldest unacknowledged · showing 15 of 47,832</p>
+
+      <article class="alert-card" data-severity="critical">
+        <p class="meta"><span class="sev">critical</span><code>Suspicious_PowerShell_v2_FINAL_old</code> · firing 14× today · assignee: none</p>
+        <p class="body">Same rule. Same false positive. Nobody remembers who wrote it. Nobody dares delete it.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="critical">
+        <p class="meta"><span class="sev">critical</span>03:12 AM · escalated · on-call: you</p>
+        <p class="body">Paged. Escalated. False positive by 03:19. Sleep not recovered. Trust not recovered either.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="high">
+        <p class="meta"><span class="sev">high</span>silent for 212 days · last fired: March</p>
+        <p class="body">Stopped matching when the log source changed in March. Nothing broke. Nothing fired. Nobody noticed.</p>
+        <p class="footnote">industry estimate: ~5% of deployed detections actually work</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="critical">
+        <p class="meta"><span class="sev">critical</span>severity source: vendor default</p>
+        <p class="body">The decommissioned test VM: CRITICAL. The platform that makes all the money: not covered. The SIEM doesn't know which one pays your salary.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="info">
+        <p class="meta"><span class="sev">info</span>recurring: monthly, before the board meeting</p>
+        <p class="body">The slide says 87% MITRE coverage. The heatmap is green. Nobody has ever tested it.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="high">
+        <p class="meta"><span class="sev">high</span>deployed via: pasting into the prod console</p>
+        <p class="body">Test coverage: "worked in the lab". Version history: none. Rollback plan: prayer.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="medium">
+        <p class="meta"><span class="sev">medium</span>author: left the company two years ago</p>
+        <p class="body">The rule stays. Changing it is archaeology. Deleting it is liability.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="medium">
+        <p class="meta"><span class="sev">medium</span>runbook: <code>SOC_Procedures_FINAL_(copy)(2).one</code></p>
+        <p class="body">The runbook is in a OneNote. Somewhere. Last updated three years ago by someone who left. Step 4 references a console that no longer exists.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="low">
+        <p class="meta"><span class="sev">low</span>escalated via: Teams thread · 47 replies</p>
+        <p class="body">The incident is in Teams. The context is in a Jira ticket. The fix is in someone's head. None of them link.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="medium">
+        <p class="meta"><span class="sev">medium</span>tier 1 · time-to-touching-a-rule: 2 years</p>
+        <p class="body">Juniors aren't allowed near detections. There's no safe way to let them. So they close duplicates until they quit.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="medium">
+        <p class="meta"><span class="sev">medium</span>ticket #4821 · opened 14 months ago</p>
+        <p class="body">Tuning request. Status: backlog. Priority: someday.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="low">
+        <p class="meta"><span class="sev">low</span>threshold raised again · fourth time this quarter</p>
+        <p class="body">The dashboard is finally green. So is the attacker's path.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="info">
+        <p class="meta"><span class="sev">info</span>audit season</p>
+        <p class="body">The auditor asked if the detections work. We showed them a spreadsheet. Everyone nodded.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="info">
+        <p class="meta"><span class="sev">info</span>platform: rebranded again</p>
+        <p class="body">SIEM → next-gen SIEM → XDR → XDR with SOAR inside. The acronyms rotate. The queue is forever.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <article class="alert-card" data-severity="new">
+        <p class="meta"><span class="sev">new</span>via: vendor webinar</p>
+        <p class="body"><strong>AI-powered auto-triage now enabled.</strong> The false positives are still being generated. They're just being closed faster now, by something that also doesn't know why they exist.</p>
+        <button class="dismiss" hidden>Dismiss</button>
+      </article>
+
+      <div class="ghost" role="presentation"></div>
+      <div class="ghost" role="presentation"></div>
+      <div class="ghost" role="presentation"></div>
+    </div>
+
+    <div class="framebreak">
+      <p class="give-up">Forget the queue.</p>
+    </div>
   </div>
-  <p class="scroll-cue" aria-hidden="true">▾ begin triage</p>
-</header>
-<main>
-<section class="queue scan" id="queue" aria-label="Alert queue">
-  <p class="toolbar">queue · filter: ALL · sort: oldest unacknowledged</p>
-
-  <article class="alert-card" data-severity="critical">
-    <p class="meta"><span class="sev">critical</span><code>Suspicious_PowerShell_v2_FINAL_old</code> · firing 14× today · assignee: none</p>
-    <p class="body">Same rule. Same false positive. Nobody remembers who wrote it. Nobody dares delete it.</p>
-    <button class="dismiss" hidden>Dismiss</button>
-  </article>
-
-  <article class="alert-card" data-severity="critical">
-    <p class="meta"><span class="sev">critical</span>03:12 AM · escalated · on-call: you</p>
-    <p class="body">Paged. Escalated. False positive by 03:19. Sleep not recovered. Trust not recovered either.</p>
-    <button class="dismiss" hidden>Dismiss</button>
-  </article>
-
-  <article class="alert-card" data-severity="high">
-    <p class="meta"><span class="sev">high</span>silent for 212 days · last fired: March</p>
-    <p class="body">Stopped matching when the log source changed in March. Nothing broke. Nothing fired. Nobody noticed.</p>
-    <p class="footnote">industry estimate: ~5% of deployed detections actually work</p>
-    <button class="dismiss" hidden>Dismiss</button>
-  </article>
-
-  <article class="alert-card" data-severity="critical">
-    <p class="meta"><span class="sev">critical</span>severity source: vendor default</p>
-    <p class="body">The decommissioned test VM: CRITICAL. The platform that makes all the money: not covered. The SIEM doesn't know which one pays your salary.</p>
-    <button class="dismiss" hidden>Dismiss</button>
-  </article>
-
-  <article class="alert-card" data-severity="info">
-    <p class="meta"><span class="sev">info</span>recurring: monthly, before the board meeting</p>
-    <p class="body">The slide says 87% MITRE coverage. The heatmap is green. Nobody has ever tested it.</p>
-    <button class="dismiss" hidden>Dismiss</button>
-  </article>
-
-  <article class="alert-card" data-severity="high">
-    <p class="meta"><span class="sev">high</span>deployed via: pasting into the prod console</p>
-    <p class="body">Test coverage: "worked in the lab". Version history: none. Rollback plan: prayer.</p>
-    <button class="dismiss" hidden>Dismiss</button>
-  </article>
-
-  <article class="alert-card" data-severity="medium">
-    <p class="meta"><span class="sev">medium</span>author: left the company two years ago</p>
-    <p class="body">The rule stays. Changing it is archaeology. Deleting it is liability.</p>
-    <button class="dismiss" hidden>Dismiss</button>
-  </article>
-
-  <article class="alert-card" data-severity="medium">
-    <p class="meta"><span class="sev">medium</span>runbook: <code>SOC_Procedures_FINAL_(copy)(2).one</code></p>
-    <p class="body">The runbook is in a OneNote. Somewhere. Last updated three years ago by someone who left. Step 4 references a console that no longer exists.</p>
-    <button class="dismiss" hidden>Dismiss</button>
-  </article>
-
-  <article class="alert-card" data-severity="medium">
-    <p class="meta"><span class="sev">medium</span>ticket #4821 · opened 14 months ago</p>
-    <p class="body">Tuning request. Status: backlog. Priority: someday.</p>
-    <button class="dismiss" hidden>Dismiss</button>
-  </article>
-
-  <article class="alert-card" data-severity="low">
-    <p class="meta"><span class="sev">low</span>threshold raised again · fourth time this quarter</p>
-    <p class="body">The dashboard is finally green. So is the attacker's path.</p>
-    <button class="dismiss" hidden>Dismiss</button>
-  </article>
-
-  <article class="alert-card" data-severity="info">
-    <p class="meta"><span class="sev">info</span>audit season</p>
-    <p class="body">The auditor asked if the detections work. We showed them a spreadsheet. Everyone nodded.</p>
-    <button class="dismiss" hidden>Dismiss</button>
-  </article>
-
-  <article class="alert-card" data-severity="info">
-    <p class="meta"><span class="sev">info</span>platform: rebranded again</p>
-    <p class="body">SIEM → next-gen SIEM → XDR → XDR with SOAR inside. The acronyms rotate. The queue is forever.</p>
-    <button class="dismiss" hidden>Dismiss</button>
-  </article>
-
-  <article class="alert-card" data-severity="new">
-    <p class="meta"><span class="sev">new</span>via: vendor webinar</p>
-    <p class="body"><strong>AI-powered auto-triage now enabled.</strong> The false positives are still being generated. They're just being closed faster now, by something that also doesn't know why they exist.</p>
-    <button class="dismiss" hidden>Dismiss</button>
-  </article>
-
-  <div class="ghost" role="presentation"></div>
-  <div class="ghost" role="presentation"></div>
-  <div class="ghost" role="presentation"></div>
 </section>
 
-<section class="framebreak scan">
-  <p class="give-up">Forget the queue.</p>
-</section>
+<section class="page p-paper" id="p3" aria-label="Page 3: diagnosis and manifesto">
+  <div class="page-scroll">
+    <div class="diagnosis">
+      <h2>It's 2026. You're detecting like it's 1997.</h2>
+      <p class="lede">Your dev team ships with version control, tests, review, CI/CD, and one-click rollback. Your SOC edits regex in a production console and hits Save. Software engineering fixed this thirty years ago. Detection engineering never showed up to class.</p>
+      <p class="col-heads" aria-hidden="true"><span>Software engineering, 2026</span><span>Your SOC, right now</span></p>
+      <div class="compare" role="table" aria-label="Software engineering versus your SOC">
+        <div class="pair" role="row"><p class="then" role="cell">Every change in version control, every author known</p><p class="now" role="cell">The previous version of that rule is in someone's Downloads folder</p></div>
+        <div class="pair" role="row"><p class="then" role="cell">Tests run on every commit</p><p class="now" role="cell">The test is production</p></div>
+        <div class="pair" role="row"><p class="then" role="cell">Review required before merge</p><p class="now" role="cell">Edited live in the prod console. Reviewer: nobody.</p></div>
+        <div class="pair" role="row"><p class="then" role="cell">Juniors merge code in week one — tests and review make it safe</p><p class="now" role="cell">Juniors close duplicates for two years. The rules are above their pay grade.</p></div>
+        <div class="pair" role="row"><p class="then" role="cell">Staging environment</p><p class="now" role="cell">Production, but braver</p></div>
+        <div class="pair" role="row"><p class="then" role="cell">Rollback is one command</p><p class="now" role="cell">Rollback is trying to remember what it said</p></div>
+        <div class="pair" role="row"><p class="then" role="cell">Priorities set by business impact</p><p class="now" role="cell">Priorities set by vendor default severity</p></div>
+        <div class="pair" role="row"><p class="then" role="cell">Docs live in the repo, versioned</p><p class="now" role="cell">Docs live in a OneNote. Somewhere.</p></div>
+      </div>
+    </div>
 
-<div class="paper">
-<section class="diagnosis" id="diagnosis">
-  <h2>It's 2026. You're detecting like it's 1997.</h2>
-  <p class="lede">Your dev team ships with version control, tests, review, CI/CD, and one-click rollback. Your SOC edits regex in a production console and hits Save. Software engineering fixed this thirty years ago. Detection engineering never showed up to class.</p>
-  <p class="col-heads" aria-hidden="true"><span>Software engineering, 2026</span><span>Your SOC, right now</span></p>
-  <div class="compare" role="table" aria-label="Software engineering versus your SOC">
-    <div class="pair" role="row"><p class="then" role="cell">Every change in version control, every author known</p><p class="now" role="cell">The previous version of that rule is in someone's Downloads folder</p></div>
-    <div class="pair" role="row"><p class="then" role="cell">Tests run on every commit</p><p class="now" role="cell">The test is production</p></div>
-    <div class="pair" role="row"><p class="then" role="cell">Review required before merge</p><p class="now" role="cell">Edited live in the prod console. Reviewer: nobody.</p></div>
-    <div class="pair" role="row"><p class="then" role="cell">Staging environment</p><p class="now" role="cell">Production, but braver</p></div>
-    <div class="pair" role="row"><p class="then" role="cell">Rollback is one command</p><p class="now" role="cell">Rollback is trying to remember what it said</p></div>
-    <div class="pair" role="row"><p class="then" role="cell">Priorities set by business impact</p><p class="now" role="cell">Priorities set by vendor default severity</p></div>
-    <div class="pair" role="row"><p class="then" role="cell">Docs live in the repo, versioned</p><p class="now" role="cell">Docs live in a OneNote. Somewhere.</p></div>
+    <div class="manifesto">
+      <h2>The soc.sucks manifesto</h2>
+      <ol>
+        <li>An alert nobody reads is a lie.</li>
+        <li>A detection that can't be tested is a guess. A guess in production is a liability.</li>
+        <li>Coverage is not a green heatmap. Coverage is the risk you actually face — detected, tested, proven.</li>
+        <li>Noise is not diligence. Volume is not vigilance. An inbox is not a defense.</li>
+        <li>Triaging noise faster is not the same as making less noise. The problem was never how fast you close alerts. It's what's creating them.</li>
+        <li>Severity should come from what the business stands to lose. Not from a vendor default.</li>
+        <li>When everything is critical, nothing is.</li>
+        <li>Your detections are code. Version them. Test them. Review them. Roll them back.</li>
+        <li>A rule that breaks silently turns your SIEM into a diary.</li>
+        <li>Every rule deserves an owner, a test, and a reason to exist. Delete the rest.</li>
+        <li>Threat intel that takes a week to become a detection is history, not intelligence.</li>
+        <li>Burnout is not a staffing problem. It's a signal-quality problem.</li>
+        <li>Tier 1 is not a career stage. It's a symptom.</li>
+        <li>Juniors don't need permission to matter. They need guardrails.</li>
+        <li>You were hired to hunt threats. Not to be a click monkey.</li>
+      </ol>
+      <p class="signoff">This needs to change.</p>
+    </div>
   </div>
 </section>
 
-<section class="manifesto" id="manifesto">
-  <h2>The soc.sucks manifesto</h2>
-  <ol>
-    <li>An alert nobody reads is a lie.</li>
-    <li>A detection that can't be tested is a guess.</li>
-    <li>Coverage is not a heatmap on a slide. Coverage is what fires when it matters.</li>
-    <li>Noise is not diligence. Volume is not vigilance.</li>
-    <li>Triaging noise faster is not the same as making less noise. The problem was never how fast you close alerts. It's what's creating them.</li>
-    <li>Severity should come from what the business stands to lose. Not from a vendor default.</li>
-    <li>Your detections are code. Version them. Test them. Review them. Roll them back.</li>
-    <li>A rule that breaks silently turns your SIEM into a diary.</li>
-    <li>Burnout is not a staffing problem. It's a signal-quality problem.</li>
-    <li>You were hired to hunt threats. Not to close tabs.</li>
-  </ol>
-  <p class="signoff">This needs to change.</p>
+<section class="page scan p-reveal" id="p4" aria-label="Page 4: the fix">
+  <div class="reveal">
+    <p class="toolbar">queue · filter: TRUE_POSITIVE (1) · sort: signal</p>
+    <article class="alert-card true-positive">
+      <p class="meta"><span class="sev">true positive</span>confidence: high · source: verified</p>
+      <h2>BUT. We're building the fix.</h2>
+      <p class="body">We're not another AI that closes your alerts faster. We fix the detections generating them — weighted by the risk that's actually yours, written as code, tested before they ship, monitored so they never break silently, rolled back in one click. We're CraftedSignal, and we build the detection engineering control plane.</p>
+      <a class="cta" href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">Investigate → craftedsignal.io</a>
+    </article>
+    <p class="ps">p.s. while you read this, your queue grew by <span id="ps-count">41</span>.</p>
+  </div>
+  <footer>
+    <p>soc.sucks — built with love and resentment by <a href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">CraftedSignal</a>.</p>
+  </footer>
 </section>
+
 </div>
 
-<section class="reveal scan" id="fix" aria-label="The one true positive">
-  <p class="toolbar">queue · filter: TRUE_POSITIVE (1) · sort: signal</p>
-  <article class="alert-card true-positive">
-    <p class="meta"><span class="sev">true positive</span>confidence: high · source: verified</p>
-    <h2>BUT. We're building the fix.</h2>
-    <p class="body">We're not another AI that closes your alerts faster. We fix the detections generating them — weighted by the risk that's actually yours, written as code, tested before they ship, monitored so they never break silently, rolled back in one click. We're CraftedSignal, and we build the detection engineering control plane.</p>
-    <a class="cta" href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">Investigate → craftedsignal.io</a>
-  </article>
-</section>
-</main>
-<footer>
-  <p>soc.sucks — built with love and resentment by <a href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">CraftedSignal</a>.</p>
-</footer>
+<div class="score" id="score" role="status">
+  <span>triage score</span>
+  <span class="total" id="score-total">0</span>
+  <span class="note">risk reduced: 0%</span>
+</div>
+
+<nav class="dots" aria-label="Pages">
+  <a href="#p1" aria-label="Page 1" aria-current="true"></a>
+  <a href="#p2" aria-label="Page 2"></a>
+  <a href="#p3" aria-label="Page 3"></a>
+  <a href="#p4" aria-label="Page 4"></a>
+</nav>
+
 <script>
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const counter = document.getElementById('alert-count');
   let count = 47832;
   const fmt = n => n.toLocaleString('en-US');
-  const bump = (n = 1) => { count += n; if (counter) counter.textContent = fmt(count); };
+  const ps = document.getElementById('ps-count');
+  const bump = (n = 1) => {
+    count += n;
+    if (counter) counter.textContent = fmt(count);
+    if (ps) ps.textContent = fmt(count - 47832 + 41);
+  };
   if (counter && !reduced) {
     const tick = () => { bump(Math.random() < 0.2 ? 3 : 1); setTimeout(tick, 500 + Math.random() * 2500); };
     setTimeout(tick, 1200);
   }
+
+  const hud = document.getElementById('score');
+  const hudTotal = document.getElementById('score-total');
+  let score = 0;
+  const points = () => {
+    score += 10;
+    hud.classList.add('on');
+    hudTotal.textContent = score.toLocaleString('en-US');
+    if (!reduced) {
+      const pop = document.createElement('span');
+      pop.className = 'pop';
+      pop.textContent = '+10';
+      hud.appendChild(pop);
+      pop.addEventListener('animationend', () => pop.remove());
+    }
+  };
   const wire = btn => btn.addEventListener('click', () => {
     const card = btn.closest('.alert-card');
     const clone = card.cloneNode(true);
@@ -604,8 +754,20 @@ footer a { color: var(--ink); }
     wire(clone.querySelector('.dismiss'));
     card.after(clone);
     bump(2);
+    points();
   });
   document.querySelectorAll('.queue .dismiss').forEach(btn => { btn.hidden = false; wire(btn); });
+
+  const dots = [...document.querySelectorAll('.dots a')];
+  const pages = [...document.querySelectorAll('.page')];
+  const seen = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const i = pages.indexOf(e.target);
+      dots.forEach((d, j) => j === i ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current'));
+    });
+  }, { root: document.getElementById('deck'), threshold: 0.6 });
+  pages.forEach(p => seen.observe(p));
 })();
 </script>
 </body>
