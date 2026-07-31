@@ -576,6 +576,29 @@ a { color: inherit; }
 .ghost:nth-of-type(1) { height: 3.4rem; opacity: 0.8; transform: skewX(-0.5deg); }
 .ghost:nth-of-type(2) { height: 2.6rem; opacity: 0.55; transform: skewX(0.9deg) translateX(0.4rem); }
 .ghost:nth-of-type(3) { height: 1.8rem; opacity: 0.3; transform: skewX(-1.6deg) translateX(-0.5rem); }
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1.6rem 0 0.5rem;
+  font: 700 0.6875rem var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.pager-btn {
+  font: inherit;
+  color: var(--ink-dim);
+  background: none;
+  border: 1px solid var(--line);
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+  min-height: 1.75rem;
+}
+.pager-btn:hover:not(:disabled) { color: var(--ink); border-color: var(--ink-dim); }
+.pager-btn:disabled { opacity: 0.3; cursor: default; }
+.pager-at b { color: var(--ink); }
 .framebreak {
   padding: 6rem 1.25rem 7rem;
   text-align: center;
@@ -695,6 +718,14 @@ a { color: inherit; }
   letter-spacing: 0.08em;
   color: rgba(20, 18, 14, 0.45);
 }
+.bridge {
+  font-family: var(--display);
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 5rem 0 1rem;
+  color: var(--paper-red);
+}
 .signoff {
   font-family: var(--display);
   font-size: clamp(2.2rem, 7.6vw, 10rem);
@@ -708,7 +739,7 @@ a { color: inherit; }
 }
 
 /* ---------- page 4: reveal ---------- */
-.p-reveal { display: flex; flex-direction: column; }
+.p-reveal .page-scroll { display: flex; flex-direction: column; }
 .reveal .outro { margin-top: 1.7rem; }
 .reveal {
   flex: 1;
@@ -922,135 +953,131 @@ footer a { color: var(--ink); }
   <div class="page-scroll">
     <div class="queue" role="group" aria-label="Alert queue">
       <h2 class="queue-title">SOC Headaches Queue</h2>
-      <p class="toolbar">queue · filter: ALL · sort: oldest unacknowledged · showing 19 of 47,832</p>
+      <p class="toolbar">queue · filter: ALL · sort: oldest unacknowledged · showing <span id="queue-range">1–20</span> of 47,832</p>
 
-      <article class="alert-card" data-severity="critical">
-        <p class="meta"><span class="sev">critical</span><code>Suspicious_PowerShell_v2_FINAL_old</code> · firing 14× today · assignee: none</p>
-        <p class="body">Same rule. Same false positive. Nobody remembers who wrote it. Nobody dares delete it.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
+      <div class="queue-page" id="queue-p1">
+          <article class="alert-card" data-severity="critical">
+            <p class="meta"><span class="sev">critical</span><code>Suspicious_PowerShell_v2_FINAL_old</code> · firing 14× today · assignee: none</p>
+            <p class="body">Same rule. Same false positive. Nobody remembers who wrote it. Nobody dares delete it.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="critical">
+            <p class="meta"><span class="sev">critical</span>03:12 AM · escalated · on-call: you</p>
+            <p class="body">Paged. Escalated. False positive by 03:19. Sleep not recovered. Trust not recovered either.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="high">
+            <p class="meta"><span class="sev">high</span>silent for 212 days · last fired: March</p>
+            <p class="body">Stopped matching when the log source changed in March. Nothing broke. Nothing fired. Nobody noticed.</p>
+            <p class="footnote">industry estimate: ~5% of deployed detections actually work</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="critical">
+            <p class="meta"><span class="sev">critical</span>severity source: vendor default</p>
+            <p class="body">A dead test VM: CRITICAL. The platform that makes the money: not covered. The SIEM doesn’t know which one pays your salary.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="high">
+            <p class="meta"><span class="sev">high</span>deployed via: pasting into prod console</p>
+            <p class="body">Test coverage: “worked in lab”. Version history: none. Rollback plan: coffee.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="info">
+            <p class="meta"><span class="sev">info</span>recurring: monthly, before board meeting</p>
+            <p class="body">The slide says 87% MITRE coverage. The heatmap is green. Real threats don’t care.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="low">
+            <p class="meta"><span class="sev">low</span>threshold raised again · fourth time this quarter</p>
+            <p class="body">The dashboard is finally green. So is the attacker’s path.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="high">
+            <p class="meta"><span class="sev">high</span>renewal quote: +40% · negotiating leverage: none</p>
+            <p class="body">Every rule is written in the vendor’s query language. Leaving means rewriting 600 by hand. The vendor knows — the quote shows it.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="medium">
+            <p class="meta"><span class="sev">medium</span>tier 1 · time-to-touching-a-rule: 2 years</p>
+            <p class="body">Juniors aren’t allowed near detections. There’s no safe way to let them. So they close duplicates until they quit.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="new">
+            <p class="meta"><span class="sev">new</span>via: vendor webinar</p>
+            <p class="body"><code>AI-powered auto-triage now enabled.</code> The false positives are still generated. Now they’re closed faster, by something that also doesn’t know why they exist.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+      </div>
 
-      <article class="alert-card" data-severity="critical">
-        <p class="meta"><span class="sev">critical</span>03:12 AM · escalated · on-call: you</p>
-        <p class="body">Paged. Escalated. False positive by 03:19. Sleep not recovered. Trust not recovered either.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
+      <div class="queue-page" id="queue-p2">
+          <article class="alert-card" data-severity="high">
+            <p class="meta"><span class="sev">high</span>description: (empty) · expected behavior: undocumented</p>
+            <p class="body">Nobody wrote down what it catches or what normal looks like. Just a name and a severity. The severity is wrong.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="medium">
+            <p class="meta"><span class="sev">medium</span>author: left the company two years ago</p>
+            <p class="body">The rule stays. Changing it is archaeology. Deleting it is liability.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="medium">
+            <p class="meta"><span class="sev">medium</span>rule count: 1,412 · retired this year: 0</p>
+            <p class="body">Every quarter adds rules. No quarter removes them. Nobody can say which ones still work, so nobody touches any of them.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="medium">
+            <p class="meta"><span class="sev">medium</span>ticket #4821 · opened 14 months ago</p>
+            <p class="body">Tuning request. Status: backlog. Priority: someday.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="medium">
+            <p class="meta"><span class="sev">medium</span>runbook: <code>SOC_Procedures_FINAL_(copy)(2).one</code></p>
+            <p class="body">In a OneNote. Somewhere. Last updated three years ago by someone who left. Step 4 opens a console that no longer exists.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="low">
+            <p class="meta"><span class="sev">low</span>escalated via: Teams thread · 47 replies</p>
+            <p class="body">The incident is in Teams. The context is in a Jira ticket. The fix is in someone’s head. None of them link.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="medium">
+            <p class="meta"><span class="sev">medium</span>threat hunt · status: skipped, again</p>
+            <p class="body">Hunting is a manual query and a wall of raw rows. Everyone agrees it matters. Nobody has the time.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="info">
+            <p class="meta"><span class="sev">info</span>threat feed · unread: 212 advisories</p>
+            <p class="body">New techniques drop weekly. Nobody triages the feed. The one that matters to your stack is in there somewhere.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="info">
+            <p class="meta"><span class="sev">info</span>audit season</p>
+            <p class="body">The auditor asked if the detections work. We showed them a spreadsheet. Everyone nodded.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <article class="alert-card" data-severity="info">
+            <p class="meta"><span class="sev">info</span>platform: rebranded again</p>
+            <p class="body">SIEM → next-gen SIEM → XDR → XDR with SOAR inside. The acronyms rotate. The queue is forever.</p>
+            <button class="dismiss" type="button" hidden>Dismiss</button>
+          </article>
+          <div class="ghost" role="presentation"></div>
+          <div class="ghost" role="presentation"></div>
+          <div class="ghost" role="presentation"></div>
+      </div>
 
-      <article class="alert-card" data-severity="high">
-        <p class="meta"><span class="sev">high</span>silent for 212 days · last fired: March</p>
-        <p class="body">Stopped matching when the log source changed in March. Nothing broke. Nothing fired. Nobody noticed.</p>
-        <p class="footnote">industry estimate: ~5% of deployed detections actually work</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="critical">
-        <p class="meta"><span class="sev">critical</span>severity source: vendor default</p>
-        <p class="body">The dead test VM: CRITICAL. The platform that makes the money: not covered. The SIEM doesn't know which one pays your salary.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="high">
-        <p class="meta"><span class="sev">high</span>description: (empty) · expected behavior: undocumented</p>
-        <p class="body">Nobody wrote down what it catches or what normal looks like. Just a name and a severity. The severity is wrong.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="info">
-        <p class="meta"><span class="sev">info</span>recurring: monthly, before the board meeting</p>
-        <p class="body">The slide says 87% MITRE coverage. The heatmap is green. Real threats don't care.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="high">
-        <p class="meta"><span class="sev">high</span>deployed via: pasting into the prod console</p>
-        <p class="body">Test coverage: "worked in the lab". Version history: none. Rollback plan: coffee.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="medium">
-        <p class="meta"><span class="sev">medium</span>author: left the company two years ago</p>
-        <p class="body">The rule stays. Changing it is archaeology. Deleting it is liability.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="medium">
-        <p class="meta"><span class="sev">medium</span>runbook: <code>SOC_Procedures_FINAL_(copy)(2).one</code></p>
-        <p class="body">The runbook is in a OneNote. Somewhere. Last updated three years ago by someone who left. Step 4 references a console that no longer exists.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="low">
-        <p class="meta"><span class="sev">low</span>escalated via: Teams thread · 47 replies</p>
-        <p class="body">The incident is in Teams. The context is in a Jira ticket. The fix is in someone's head. None of them link.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="medium">
-        <p class="meta"><span class="sev">medium</span>tier 1 · time-to-touching-a-rule: 2 years</p>
-        <p class="body">Juniors aren't allowed near detections. There's no safe way to let them. So they close duplicates until they quit.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="medium">
-        <p class="meta"><span class="sev">medium</span>ticket #4821 · opened 14 months ago</p>
-        <p class="body">Tuning request. Status: backlog. Priority: someday.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="medium">
-        <p class="meta"><span class="sev">medium</span>threat hunt · status: skipped, again</p>
-        <p class="body">Hunting is a manual query and a wall of raw rows. Everyone agrees it matters. Nobody has the time. Maybe next sprint.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="info">
-        <p class="meta"><span class="sev">info</span>threat feed · unread: 212 advisories</p>
-        <p class="body">New techniques drop weekly. Nobody triages the feed. The one that matters to your stack is in there somewhere.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="low">
-        <p class="meta"><span class="sev">low</span>threshold raised again · fourth time this quarter</p>
-        <p class="body">The dashboard is finally green. So is the attacker's path.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="info">
-        <p class="meta"><span class="sev">info</span>audit season</p>
-        <p class="body">The auditor asked if the detections work. We showed them a spreadsheet. Everyone nodded.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="info">
-        <p class="meta"><span class="sev">info</span>platform: rebranded again</p>
-        <p class="body">SIEM → next-gen SIEM → XDR → XDR with SOAR inside. The acronyms rotate. The queue is forever.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="high">
-        <p class="meta"><span class="sev">high</span>renewal quote: +40% · negotiating leverage: none</p>
-        <p class="body">Every rule is written in the vendor's query language. Leaving means rewriting 600 rules by hand. The vendor knows. The quote shows it.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <article class="alert-card" data-severity="new">
-        <p class="meta"><span class="sev">new</span>via: vendor webinar</p>
-        <p class="body"><strong>AI-powered auto-triage now enabled.</strong> The false positives are still generated. Now they're just closed faster, by something that also doesn't know why they exist.</p>
-        <button class="dismiss" type="button" hidden>Dismiss</button>
-      </article>
-
-      <div class="ghost" role="presentation"></div>
-      <div class="ghost" role="presentation"></div>
-      <div class="ghost" role="presentation"></div>
+      <nav class="pager" aria-label="Queue pages" hidden>
+        <button class="pager-btn" type="button" data-page-prev aria-controls="queue-p1 queue-p2">‹ prev</button>
+        <span class="pager-at" aria-live="polite">page <b id="queue-page-num">1</b> of 2</span>
+        <button class="pager-btn" type="button" data-page-next aria-controls="queue-p1 queue-p2">next ›</button>
+      </nav>
     </div>
-
     <div class="framebreak">
       <p class="give-up">Forget the queue.</p>
     </div>
   </div>
 </section>
 
-<section class="page p-paper" id="p3" aria-label="Page 3: diagnosis and manifesto">
+<section class="page p-paper" id="p3" aria-label="Page 3: the diagnosis">
   <div class="page-scroll">
     <div class="diagnosis">
       <h2>It's 2026. You're detecting like it's 1997.</h2>
@@ -1071,6 +1098,7 @@ footer a { color: var(--ink); }
         <div class="pair" role="row"><p class="then" role="cell">Priorities set by business impact</p><p class="now" role="cell">Priorities set by vendor default severity</p></div>
         <div class="pair" role="row"><p class="then" role="cell">Docs live in the repo, versioned</p><p class="now" role="cell">Docs live in a OneNote. Somewhere.</p></div>
       </div>
+      <p class="bridge">We need to set some rules.</p>
     </div>
   </div>
 </section>
@@ -1079,28 +1107,24 @@ footer a { color: var(--ink); }
   <div class="page-scroll">
     <div class="manifesto">
       <h2>The SoC Manifesto</h2>
-      <p class="rfc">The key words "MUST", "MUST NOT" and "SHOULD" are to be interpreted as per RFC 2119. (as old as your SIEM)</p>
+      <p class="rfc">The key words “MUST”, “MUST NOT” and “SHOULD” are to be interpreted per RFC 2119. (as old as your SIEM)</p>
       <ol>
-        <li>Every alert MUST be worth a human's attention.<span class="snark">An alert nobody reads is a lie.</span></li>
-        <li>Every detection MUST be tested before it ships.<span class="snark">Untested detections are guesses. Guesses in production are liabilities.</span></li>
-        <li>Detection MUST start from risk, not from a rule pack.<span class="snark">If you can't say what it protects, you're collecting logs with extra steps.</span></li>
-        <li>Coverage MUST be measured against your actual risk.<span class="snark">A green heatmap on a slide protects the slide.</span></li>
-        <li>Noise MUST go down over time, not up.<span class="snark">Volume is not vigilance. An inbox is not a defense.</span></li>
-        <li>Fix what creates the alerts, not how fast you close them.<span class="snark">Auto-closing garbage faster is still garbage.</span></li>
-        <li>Severity MUST come from what the business stands to lose.<span class="snark">The vendor default doesn't know what pays your salary.</span></li>
-        <li>"Critical" MUST be rare.<span class="snark">When everything is critical, nothing is.</span></li>
-        <li>Detections MUST live in version control.<span class="snark">"The old version is in my Downloads folder" is not version control.</span></li>
-        <li>Detection logic MUST outlive your SIEM contract.<span class="snark">Rewriting 600 rules by hand is not a migration plan. It's a hostage situation.</span></li>
-        <li>A rule that goes silent MUST page someone.<span class="snark">Otherwise your SIEM is a diary with a license fee.</span></li>
-        <li>Every rule MUST have an owner, a test, and a reason to exist.<span class="snark">Delete the rest. Yes, that one too.</span></li>
-        <li>Response MUST ship with the detection.<span class="snark">The rule lives in the SIEM. The runbook lives in OneNote. Neither knows the other exists.</span></li>
-        <li>Threat intel MUST become detections in days, not weeks.<span class="snark">A technique that sits in a PDF for a month is history, not intelligence.</span></li>
-        <li>A feed MUST produce detections or MUST be cancelled.<span class="snark">You bought 14 feeds this year. Name one detection that came out of them.</span></li>
-        <li>AI MUST accelerate the engineering, not the closing.<span class="snark">Closing 47,832 alerts faster is a faster way to miss the one that mattered.</span></li>
-        <li>Burnout MUST be treated as a signal-quality problem.<span class="snark">You can't hire your way out of 47,000 false positives.</span></li>
-        <li>Tier 1 MUST NOT be a life sentence.<span class="snark">Closing duplicates for two years is not a career path. It's a symptom.</span></li>
-        <li>Juniors MUST be able to ship safely.<span class="snark">They don't need permission to matter. They need guardrails.</span></li>
-        <li>Analysts MUST hunt.<span class="snark">You were hired to hunt threats, not click around like a monkey.</span></li>
+          <li>Every alert MUST be worth a human’s attention.<span class="snark">An alert nobody reads is a lie.</span></li>
+          <li>Noise MUST go down over time, not up.<span class="snark">Volume is not vigilance. Auto-closing garbage faster is still garbage.</span></li>
+          <li>“Critical” MUST be rare.<span class="snark">When everything is critical, nothing is.</span></li>
+          <li>Severity MUST come from what the business loses.<span class="snark">The vendor default doesn’t know what pays your salary.</span></li>
+          <li>Detection MUST start from risk, not a rule pack.<span class="snark">If you can’t say what it protects, you’re collecting logs with extra steps.</span></li>
+          <li>Management MUST NOT move the metric to go green.<span class="snark">Changing the measurement is not reducing the risk. A green heatmap protects the slide.</span></li>
+          <li>Every detection MUST be tested before it ships.<span class="snark">Untested detections are guesses. Guesses in production are liabilities.</span></li>
+          <li>Detections MUST live in version control.<span class="snark">“The old version is in my Downloads folder” is not version control.</span></li>
+          <li>Detection MUST have one source of truth.<span class="snark">Rules scattered across five consoles aren’t a portfolio. They’re drift with a login page.</span></li>
+          <li>Tuning MUST preserve the detection’s objective.<span class="snark">Tuning until it stops firing is not tuning. It’s deleting the rule in slow motion.</span></li>
+          <li>Rules MUST be a portfolio, not a pile.<span class="snark">Every rule needs an owner, a test, and a reason to exist. Delete the rest.</span></li>
+          <li>A rule that goes silent MUST page someone.<span class="snark">Otherwise your SIEM is a diary with a license fee.</span></li>
+          <li>Intel MUST become detections in days, not weeks.<span class="snark">A technique that sits in a PDF for a month is history, not intelligence.</span></li>
+          <li>AI MUST accelerate the engineering, not the closing.<span class="snark">Closing 47,832 alerts faster is a faster way to miss the one that mattered.</span></li>
+          <li>Tier 1 MUST NOT be a life sentence.<span class="snark">Closing duplicates for two years is not a career path. It’s a symptom.</span></li>
+          <li>Analysts MUST hunt.<span class="snark">You were hired to hunt threats, not click around like a monkey.</span></li>
       </ol>
       <p class="signoff">This needs to change.</p>
     </div>
@@ -1108,7 +1132,8 @@ footer a { color: var(--ink); }
 </section>
 
 <section class="page scan p-reveal" id="p5" aria-label="Page 5: the fix">
-  <div class="reveal">
+  <div class="page-scroll">
+    <div class="reveal">
     <p class="toolbar">queue · filter: TRUE_POSITIVE (1) · sort: signal</p>
     <article class="alert-card true-positive">
       <p class="meta"><span class="sev">true positive</span>confidence: high · source: verified</p>
@@ -1125,11 +1150,12 @@ footer a { color: var(--ink); }
       </ul>
       <a class="cta" href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">Fix your SOC</a>
     </article>
-    <p class="ps">p.s. while you read this, your queue grew by <span id="ps-count">41</span>.</p>
+      <p class="ps">p.s. while you read this, your queue grew by <span id="ps-count">41</span>.</p>
+    </div>
+    <footer>
+      <p>soc.sucks · built with love and resentment by <a href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">CraftedSignal</a>.</p>
+    </footer>
   </div>
-  <footer>
-    <p>soc.sucks · built with love and resentment by <a href="https://craftedsignal.io/?utm_source=soc.sucks&amp;utm_medium=referral&amp;utm_campaign=manifesto">CraftedSignal</a>.</p>
-  </footer>
 </section>
 
 </div>
@@ -1355,6 +1381,33 @@ footer a { color: var(--ink); }
     list.addEventListener('mousemove', e => set(e.target.closest('li')));
     list.addEventListener('mouseleave', () => set(null));
     list.closest('.page-scroll')?.addEventListener('scroll', () => set(null), { passive: true });
+  }
+
+  // ten at a time: 47,832 would be honest, but nobody would scroll it
+  const qPages = [...document.querySelectorAll('.queue-page')];
+  const pager = document.querySelector('.pager');
+  if (qPages.length > 1 && pager) {
+    const prev = pager.querySelector('[data-page-prev]');
+    const next = pager.querySelector('[data-page-next]');
+    const num = document.getElementById('queue-page-num');
+    const range = document.getElementById('queue-range');
+    const scroller = document.querySelector('#p2 .page-scroll');
+    let at = 0;
+    const show = (i, move) => {
+      at = Math.max(0, Math.min(qPages.length - 1, i));
+      qPages.forEach((pg, j) => { pg.hidden = j !== at; });
+      const n = qPages[at].querySelectorAll('.alert-card').length;
+      const from = at * 10 + 1;
+      num.textContent = at + 1;
+      range.textContent = `${from}\u2013${from + n - 1}`;
+      prev.disabled = at === 0;
+      next.disabled = at === qPages.length - 1;
+      if (move && scroller) scroller.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+    };
+    pager.hidden = false;
+    prev.addEventListener('click', () => show(at - 1, true));
+    next.addEventListener('click', () => show(at + 1, true));
+    show(0, false);
   }
 
   const dots = [...document.querySelectorAll('.dots a')];
