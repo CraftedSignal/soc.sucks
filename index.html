@@ -711,6 +711,22 @@ a { color: inherit; }
 }
 .aftermath p { margin-bottom: 0.9rem; }
 .aftermath p:last-child { color: var(--ink-soft); }
+.tally {
+  border-top: 1px solid var(--line-flat);
+  margin-top: 2.4rem;
+  padding-top: 1.1rem;
+  font-size: 0.75rem;
+  color: var(--ink-dim);
+}
+.tally p {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  max-width: 34rem;
+  padding: 0.25rem 0;
+}
+.tally b { font-weight: 700; color: var(--kpi-green); }
+.tally .never b { color: var(--sev-critical); }
 
 /* ---------- paper pages: diagnosis + manifesto ---------- */
 .p-paper { background: var(--paper); color: var(--paper-ink); }
@@ -1229,6 +1245,11 @@ footer a { color: var(--ink); }
         <p>Ticket #4821 is assigned to nobody. Nobody is a role now.</p>
         <p>Someone still has to decide what’s worth detecting, prove it works, and own it when it breaks. There’s no ticket type for that, no SLA on it, and no dashboard that goes green when you do it.</p>
       </div>
+
+      <div class="tally">
+        <p><span>alerts auto-closed since you opened this page</span><b id="dash-closed">0</b></p>
+        <p class="never"><span>upstream problems fixed</span><b>0</b></p>
+      </div>
     </div>
     <div class="framebreak">
       <p class="give-up">Forget the queue.</p>
@@ -1349,6 +1370,18 @@ footer a { color: var(--ink); }
   if (counter && !reduced) {
     const tick = () => { bump(Math.random() < 0.2 ? 3 : 1); setTimeout(tick, 500 + Math.random() * 2500); };
     setTimeout(tick, 1200);
+  }
+
+  // the dashboard's tally: one races, the other is markup and never moves
+  const closed = document.getElementById('dash-closed');
+  if (closed && !reduced) {
+    let done = 0;
+    const race = () => {
+      done += 3 + Math.floor(Math.random() * 9);
+      closed.textContent = fmt(done);
+      setTimeout(race, 260 + Math.random() * 340);
+    };
+    setTimeout(race, 900);
   }
 
   const hud = document.getElementById('score');
