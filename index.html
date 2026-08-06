@@ -81,6 +81,7 @@
   --sev-info: #8b95a6;
   --sev-new: #c792ea;
   --true-positive: #3ddc84;
+  --kpi-green: #2f9e5f;
   --paper: #f4f1ea;
   --paper-ink: #14120e;
   --paper-red: #b3261e;
@@ -611,6 +612,29 @@ a { color: inherit; }
   text-wrap: balance;
 }
 
+/* ---------- the dashboard: a different tool, not the SIEM ---------- */
+.p-dash { background: var(--panel-flat-2); }
+.dash {
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 0;
+}
+.dash .toolbar { border-color: var(--line-flat); }
+.dash h2 {
+  font-family: var(--display);
+  font-size: clamp(2rem, 6vw, 4.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  margin: 1.6rem 0 0.9rem;
+  text-wrap: balance;
+}
+.dash .lede {
+  color: var(--ink-dim);
+  font-size: 0.9375rem;
+  max-width: 44rem;
+  margin-bottom: 2rem;
+}
+
 /* ---------- paper pages: diagnosis + manifesto ---------- */
 .p-paper { background: var(--paper); color: var(--paper-ink); }
 .p-paper ::selection { background: var(--paper-red); color: var(--paper); }
@@ -1070,6 +1094,16 @@ footer a { color: var(--ink); }
         <span class="pager-at" aria-live="polite">page <b id="queue-page-num">1</b> of 2</span>
         <button class="pager-btn" type="button" data-page-next aria-controls="queue-p1 queue-p2">next ›</button>
       </nav>
+    </div>
+  </div>
+</section>
+
+<section class="page p-dash" id="p3" aria-label="Page 3: the dashboard">
+  <div class="page-scroll">
+    <div class="dash">
+      <p class="toolbar">SOC performance analytics · Q4 board pack · auto-generated, do not edit</p>
+      <h2>Everything is green now.</h2>
+      <p class="lede">We bought the AI. It works. Look at the numbers.</p>
     </div>
     <div class="framebreak">
       <p class="give-up">Forget the queue.</p>
