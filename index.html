@@ -634,6 +634,45 @@ a { color: inherit; }
   max-width: 44rem;
   margin-bottom: 2rem;
 }
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+}
+.kpi {
+  grid-column: span 2;
+  background: var(--panel-flat);
+  border: 1px solid var(--line-flat);
+  padding: 1rem 1.1rem 1.1rem;
+}
+/* the two that never moved get the wider bottom row */
+.kpi:nth-child(4), .kpi:nth-child(5) { grid-column: span 3; }
+.kpi-label {
+  color: var(--ink-dim);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.kpi-value {
+  font-family: var(--display);
+  font-size: clamp(1.9rem, 4.5vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin: 0.3rem 0 0.35rem;
+}
+.kpi-delta {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.kpi-delta.good { color: var(--kpi-green); }
+.kpi-delta.flat { color: var(--ink-dim); }
+.kpi-note {
+  color: var(--ink-dim);
+  font-size: 0.6875rem;
+  margin-top: 0.3rem;
+}
 
 /* ---------- paper pages: diagnosis + manifesto ---------- */
 .p-paper { background: var(--paper); color: var(--paper-ink); }
@@ -1104,6 +1143,39 @@ footer a { color: var(--ink); }
       <p class="toolbar">SOC performance analytics · Q4 board pack · auto-generated, do not edit</p>
       <h2>Everything is green now.</h2>
       <p class="lede">We bought the AI. It works. Look at the numbers.</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <p class="kpi-label">mean time to triage</p>
+          <p class="kpi-value">3s</p>
+          <p class="kpi-delta good"><span aria-hidden="true">▼</span> 99.9%</p>
+          <p class="kpi-note">was 4h 12m</p>
+        </div>
+        <div class="kpi">
+          <p class="kpi-label">backlog</p>
+          <p class="kpi-value">0</p>
+          <p class="kpi-delta good">cleared</p>
+          <p class="kpi-note">first time since 2019</p>
+        </div>
+        <div class="kpi">
+          <p class="kpi-label">analyst headcount</p>
+          <p class="kpi-value">6</p>
+          <p class="kpi-delta good"><span aria-hidden="true">▼</span> 33%</p>
+          <p class="kpi-note">efficiency gain</p>
+        </div>
+        <div class="kpi">
+          <p class="kpi-label">MITRE coverage</p>
+          <p class="kpi-value">87%</p>
+          <p class="kpi-delta flat">unchanged</p>
+          <p class="kpi-note">still never tested</p>
+        </div>
+        <div class="kpi">
+          <p class="kpi-label">detections fixed</p>
+          <p class="kpi-value">0</p>
+          <p class="kpi-delta flat">—</p>
+          <p class="kpi-note">not a tracked metric</p>
+        </div>
+      </div>
     </div>
     <div class="framebreak">
       <p class="give-up">Forget the queue.</p>
