@@ -955,6 +955,12 @@ footer a { color: var(--ink); }
   .pair .now::before { content: "your soc, right now"; }
   .dots { right: 0.55rem; }
   .alert-card .meta { padding-right: 4.8rem; }
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .kpi, .kpi:nth-child(4), .kpi:nth-child(5) { grid-column: span 1; }
+  .tally p { max-width: none; }
+}
+@media (max-width: 26rem) {
+  .kpis { grid-template-columns: 1fr; }
 }
 /* window state: JS-driven, must outrank the boot-sequence intro rules above */
 .booted .w-readout, .booted .w-assessment, .booted .hero h1,
