@@ -673,6 +673,44 @@ a { color: inherit; }
   font-size: 0.6875rem;
   margin-top: 0.3rem;
 }
+.dash-label {
+  color: var(--sev-critical);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-top: 1px solid var(--line-flat);
+  padding-top: 1.1rem;
+  margin-bottom: 0.9rem;
+}
+.still { list-style: none; margin-bottom: 2.6rem; }
+.still li {
+  border-left: 2px solid var(--line-flat);
+  padding: 0 0 0 0.9rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+  max-width: 52rem;
+}
+.still code { color: var(--ink); font-weight: 700; }
+.still em { color: var(--ink); font-style: normal; }
+.kicker {
+  font-family: var(--display);
+  font-size: clamp(1.75rem, 5.5vw, 3.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  margin-bottom: 2.2rem;
+  text-wrap: balance;
+}
+.kicker span { display: block; }
+.kicker span:last-child { color: var(--sev-critical); }
+.aftermath {
+  max-width: 46rem;
+  font-size: 0.875rem;
+  color: var(--ink-dim);
+}
+.aftermath p { margin-bottom: 0.9rem; }
+.aftermath p:last-child { color: var(--ink-soft); }
 
 /* ---------- paper pages: diagnosis + manifesto ---------- */
 .p-paper { background: var(--paper); color: var(--paper-ink); }
@@ -1175,6 +1213,21 @@ footer a { color: var(--ink); }
           <p class="kpi-delta flat">—</p>
           <p class="kpi-note">not a tracked metric</p>
         </div>
+      </div>
+
+      <p class="dash-label">not on the dashboard</p>
+      <ul class="still">
+        <li><code>Suspicious_PowerShell_v2_FINAL_old</code> — auto-closed 3,411 times this quarter. Confidence: high. Every time. Still firing. Still nobody’s. The AI never asked why it exists; that isn’t what it was bought to do.</li>
+        <li>The rule that stopped matching in March — silent 212 days, unchanged. Nothing to auto-close, nothing to notice. <em>A dashboard can’t show you the alert that didn’t fire.</em></li>
+        <li>Ticket <code>#4821</code> — tuning request, 14 months open. Now assigned to nobody.</li>
+      </ul>
+
+      <p class="kicker"><span>The AI closed the alert.</span><span>The broken rule is still running.</span></p>
+
+      <div class="aftermath">
+        <p>Tier 1 went offshore in Q1. Nearshore in Q3. Automated in Q4. The people who used to notice a rule had stopped working don’t work here anymore, and what replaced them was optimised to close alerts, not to ask whether the alert should have existed.</p>
+        <p>Ticket #4821 is assigned to nobody. Nobody is a role now.</p>
+        <p>Someone still has to decide what’s worth detecting, prove it works, and own it when it breaks. There’s no ticket type for that, no SLA on it, and no dashboard that goes green when you do it.</p>
       </div>
     </div>
     <div class="framebreak">
